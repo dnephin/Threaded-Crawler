@@ -8,6 +8,6 @@ class TestSaver(object):
 		pass
 
 	def save(self, url, page):
-		print "url : %s, page: %s" %(url, page)
+		print "url : %s, page: %s" %(url, 'SAVED')
 
 

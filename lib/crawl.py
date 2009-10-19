@@ -7,8 +7,9 @@
 #	- cache all visited urls
 
 # NOTE: regex for path objects can not be in diretory or domain, only file
-# TODO: add time of each request
-# TODO: what happens when pages 404 or 500 ? catch exceptions ?
+
+# TODO: implement max_depth
+# TODO: fix return from fetch so that a None type can be dealt with (raise excetion, caught at proper level)
 
 from xml.dom.minidom import parse
 import logging
@@ -17,9 +18,19 @@ import urlparse
 import re
 import urllib2
 import cookielib
+import time
+import random
 
 log = logging.getLogger("Crawler")
 log.addHandler(logging.StreamHandler())
+
+class AgentHttpErrorHandler(urllib2.HTTPDefaultErrorHandler):
+	def __init__(self):
+		print "init called"
+		#super(AgentHttpErrorHandler, self).__init__()
+	
+	def http_error_default(self, req, fp, code, msg, hdrs):
+		log.warning("Error fetching %s: %d, %s" % (req.get_full_url(), code, msg))
 
 class Agent(object):
 	"""
@@ -32,18 +43,37 @@ class Agent(object):
 		opener = None
 		setup = False # TODO: check for setup agent
 		url_cache = []
+		min_sleep = 0
+		max_sleep = 0
 
 		def setup(self, dom_node):
-			# TODO: setup proxy from config
 
+			# opener setup
+			proxy_handler = urllib2.BaseHandler
+			proxy_tags = dom_node.getElementsByTagName("proxy")
+			if proxy_tags and len(proxy_tags):
+				proxy_handler = urllib2.ProxyHandler({'http': proxy_tags[0].getAttribute("url")})
+				
+			error_handler = AgentHttpErrorHandler()
+#			error_handler.http_error_default(req, fp, code, msg, hdrs)
+				
 			cookiejar = cookielib.CookieJar()
 			self.opener = urllib2.build_opener(
-				urllib2.HTTPCookieProcessor(cookiejar))
+				urllib2.HTTPCookieProcessor(cookiejar),
+				proxy_handler,
+				error_handler)
 
+			# target saver setup
 			target_saver_node = dom_node.getElementsByTagName("target_save")[0]
 			class_name = target_saver_node.getAttribute("class")
 			module_name = target_saver_node.getAttribute("module")
-			self.target_saver = getattr(__import__(module_name), class_name)() # TODO: fix this to work with any module
+			self.target_saver = getattr(__import__(module_name), class_name)()
+			
+			# sleeper setup
+			random.seed(time.time())
+			sleep_tag = dom_node.getElementsByTagName("sleep_per_fetch")[0]
+			self.min_sleep = float(sleep_tag.getAttribute("min_seconds"))
+			self.max_sleep = float(sleep_tag.getAttribute("max_seconds"))
 
 		def fetch(self, url):
 			"""
@@ -52,10 +82,20 @@ class Agent(object):
 			"""
 			if url in self.url_cache:
 				log.warning("url %s already in cache, skipping..." % (url))
-				return None
+#				return None
+#			TODO: handle this here or in the saver ?
 
+			if self.max_sleep:
+				time.sleep(random.uniform(self.min_sleep, self.max_sleep))
+				
 			log.info("Fetching %s." % (url))
+			start_time = time.time()
 			resp = self.opener.open(url)
+			run_time = time.time() - start_time
+			log.info("Fetched in %2.2f seconds" % (run_time))
+			
+			if not resp:
+				return None
 
 			new_url = resp.geturl()
 			self.url_cache.append(new_url)
@@ -87,13 +127,10 @@ class AbstractPathObject(object):
 	orig_url = None
 	url = None
 	agent = Agent()
-	relative = False
 
 	def __init__(self, dom_node, parent_url):
 		self.orig_url = dom_node.getAttribute("value")
-		if dom_node.hasAttribute("relative") and bool(dom_node.getAttribute("relative")):
-			relative = True
-
+		if parent_url:
 			self.url = urlparse.urljoin(parent_url, self.url)
 			log.debug("Built absolute url %s." % (self.url))
 		else:
@@ -101,7 +138,7 @@ class AbstractPathObject(object):
 
 
 	def process(self):
-		raise NotImplementedError("This is abstract, no implemented in %s" % (self.__class__.__name__))
+		raise NotImplementedError("This is abstract, not implemented in %s" % (self.__class__.__name__))
 		
 
 class AbstractPathRegexObject(AbstractPathObject):
@@ -120,17 +157,15 @@ class AbstractPathRegexObject(AbstractPathObject):
 
 	def findUrls(self, page):
 		match_list = []
-		# TODO: skip some of the <head> data? parse page first maybe?
 		log.debug("Finding urls on page for regex %s on page" % (self.regex_pattern.pattern))
 		for line in page.split("\n"):
 			m = self.regex_pattern.search(line)
 			if m:
-				if self.relative:
-					target_url = urlparse.urljoin(self.url, m.group(0))
-				else:
-					target_url = m.group(0)
+				target_url = urlparse.urljoin(self.url, m.group(0))
 				match_list.append(target_url) 
 				log.debug("Adding url %s for the page." % (target_url))
+			if self.max_matches and len(match_list) >= self.max_matches:
+				break
 		return match_list
 
 
@@ -178,14 +213,19 @@ class Target(AbstractPathObject):
 	pass
 
 class TargetRegex(AbstractPathRegexObject, Target):
+	max_depth = 0
+	
 	def __init__(self, dom_node, parent_url=None):
 		super(TargetRegex, self).__init__(dom_node, parent_url)
 		self.setPattern(self.orig_url)
 		self.setMaxMatches(dom_node)
+		if dom_node.hasAttribute("max_depth"):
+			self.max_depth = int(dom_node.getAttribute("max_depth"))
+		
 
 	def process(self, page):
 		for target_url in self.findUrls(page):
-			final_url, page = self.agent.fetch(self.url)
+			final_url, page = self.agent.fetch(target_url)
 			self.agent.target_saver.save(final_url, page)
 			
 
@@ -250,7 +290,7 @@ class Crawler(object):
 				if node.nodeName == 'feed_url':
 					self.feed_list.append(FeedUrl(node))
 				elif node.nodeName == 'target_url':
-					self.target_list.appened(TargetUrl(node))
+					self.target_list.append(TargetUrl(node))
 				else:
 					log.warning("Unknown tag %s, skipping it." % (node.nodeName))
 					continue
