@@ -1,16 +1,22 @@
 <configuration>
 	<crawler>
+		<agent>
+			<!-- <proxy host="" port="" login="" password="" /> -->
+			<target_save module="saver" class="TestSaver">
+
+			</target_save>
+		</agent>
 		<path name="montreal craigslist">
 			<feed_url value="http://montreal.en.craigslist.ca/apa/">
-				<target_regex value="\\d{8,12}.html" relative="True" /> <!-- TODO: always 10 digits ? -->
-				<feed_regex value="index\\d{3}.html" relative="True" max_depth="6">
-					<target_regex value="\\d{8,12}.html" relative="True" />
+				<target_regex value="\d{8,12}.html" relative="True" /> <!-- TODO: always 10 digits ? -->
+				<feed_regex value="index\d{3}.html" relative="True" max_depth="6">
+					<target_regex value="\d{8,12}.html" relative="True" />
 				</feed_regex>
 			</feed_url>
 			<feed_url value="http://montreal.en.craigslist.ca/roo/">
-				<target_regex value="\\d{8,12}.html" relative="True" /> <!-- TODO: always 10 digits ? -->
-				<feed_regex value="index\\d{3}.html" relative="True" max_depth="6">
-					<target_regex value="\\d{8,12}.html" relative="True" />
+				<target_regex value="\d{8,12}.html" relative="True" /> <!-- TODO: always 10 digits ? -->
+				<feed_regex value="index\d{3}.html" relative="True" max_depth="6">
+					<target_regex value="\d{8,12}.html" relative="True" />
 				</feed_regex>
 			</feed_url>
 			<!-- TODO: other categories -->
