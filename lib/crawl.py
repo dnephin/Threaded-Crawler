@@ -3,13 +3,11 @@
 # The crawler
 #	- read xml config
 #	- build crawler path from config
-#	- follow each feed_url to completion, save page
-#	- cache all visited urls
+#	- follow each feed_url to completion, call save method of target_saver
 
 # NOTE: regex for path objects can not be in diretory or domain, only file
 
 # TODO: implement max_depth
-# TODO: fix return from fetch so that a None type can be dealt with (raise excetion, caught at proper level)
 
 from xml.dom.minidom import parse
 import logging
@@ -21,41 +19,60 @@ import cookielib
 import time
 import random
 
+# logger for crawler module
 log = logging.getLogger("Crawler")
 log.addHandler(logging.StreamHandler())
 
+
+class BrokenPathException(Exception):
+	" Exception thrown when a path reached its end because of an HTTP error "
+	def __init__(self, url, code, msg):
+		self.url = url
+		self.code = code
+		self.msg = msg
+		
+	def __str__(self):
+			return "%d: %s (%s)" % (self.code, self.msg, self.url)
+
+
 class AgentHttpErrorHandler(urllib2.HTTPDefaultErrorHandler):
+	" Http exception handler for 4xx, 5xx error codes "
 	def __init__(self):
-		print "init called"
-		#super(AgentHttpErrorHandler, self).__init__()
+		pass
 	
 	def http_error_default(self, req, fp, code, msg, hdrs):
 		log.warning("Error fetching %s: %d, %s" % (req.get_full_url(), code, msg))
+		raise BrokenPathException(req.get_full_url(), code, msg)
+		
 
 class Agent(object):
 	"""
-	A singleton class used by feed objects to access pages, and store the results.
+	A singleton class used by feed objects to:
+	 - access pages
+	 - store the target pages
+	 - randomly sleep before accessing pages
 	"""
 	__instance = None
 
 	class __impl:
 		target_saver = None
 		opener = None
-		setup = False # TODO: check for setup agent
+		is_setup = False
 		url_cache = []
 		min_sleep = 0
 		max_sleep = 0
 
 		def setup(self, dom_node):
-
+			" Setup the Agent "
 			# opener setup
 			proxy_handler = urllib2.BaseHandler
 			proxy_tags = dom_node.getElementsByTagName("proxy")
 			if proxy_tags and len(proxy_tags):
-				proxy_handler = urllib2.ProxyHandler({'http': proxy_tags[0].getAttribute("url")})
+				proxy_url = proxy_tags[0].getAttribute("url")
+				proxy_handler = urllib2.ProxyHandler({'http': proxy_url})
+				log.info("Setup Agent Proxy: %s" % (proxy_url))
 				
 			error_handler = AgentHttpErrorHandler()
-#			error_handler.http_error_default(req, fp, code, msg, hdrs)
 				
 			cookiejar = cookielib.CookieJar()
 			self.opener = urllib2.build_opener(
@@ -68,39 +85,39 @@ class Agent(object):
 			class_name = target_saver_node.getAttribute("class")
 			module_name = target_saver_node.getAttribute("module")
 			self.target_saver = getattr(__import__(module_name), class_name)()
+			log.info("Setup Agent target saver class: %s.%s" % (module_name, class_name))
 			
 			# sleeper setup
 			random.seed(time.time())
 			sleep_tag = dom_node.getElementsByTagName("sleep_per_fetch")[0]
 			self.min_sleep = float(sleep_tag.getAttribute("min_seconds"))
 			self.max_sleep = float(sleep_tag.getAttribute("max_seconds"))
+			log.info("Setup Agent random sleep with values %1.2f to %1.2f" % (self.min_sleep, self.max_sleep))
+			
+			self.setup = True
 
 		def fetch(self, url):
-			"""
-			Open the url, check for valid response and return page url and page.
-			Stores the url in the url_cache.
-			"""
+			" Open the url, check for valid response and return page url and page. "
+			
+			if not self.is_setup:
+				raise RuntimeError("Agent must be setup before it is used")
+
 			if url in self.url_cache:
-				log.warning("url %s already in cache, skipping..." % (url))
-#				return None
-#			TODO: handle this here or in the saver ?
+				log.warning("url %s already was already visited, possible recursion..." % (url))
 
 			if self.max_sleep:
 				time.sleep(random.uniform(self.min_sleep, self.max_sleep))
 				
 			log.info("Fetching %s." % (url))
+			self.url_cache.append(url)
 			start_time = time.time()
 			resp = self.opener.open(url)
 			run_time = time.time() - start_time
 			log.info("Fetched in %2.2f seconds" % (run_time))
-			
-			if not resp:
-				return None
 
 			new_url = resp.geturl()
-			self.url_cache.append(new_url)
 			if new_url != url:
-				self.url__cache.append(url)
+				self.url_cache.append(new_url)
 
 			return new_url, unicode(resp.read(), errors='ignore')
 			
@@ -121,9 +138,7 @@ class Agent(object):
 
 
 class AbstractPathObject(object):
-	"""
-	The common base class for path objects.
-	"""
+	"""  The common base class for path objects. """
 	orig_url = None
 	url = None
 	agent = Agent()
@@ -136,15 +151,12 @@ class AbstractPathObject(object):
 		else:
 			self.url = self.orig_url
 
-
 	def process(self):
 		raise NotImplementedError("This is abstract, not implemented in %s" % (self.__class__.__name__))
 		
 
 class AbstractPathRegexObject(AbstractPathObject):
-	"""
-	Abstract base class for path objects that are regex patterns.
-	"""
+	""" Abstract base class for path objects that are regex patterns. """
 	max_matches = 0
 	regex_pattern = None
 
@@ -225,7 +237,10 @@ class TargetRegex(AbstractPathRegexObject, Target):
 
 	def process(self, page):
 		for target_url in self.findUrls(page):
-			final_url, page = self.agent.fetch(target_url)
+			try:
+				final_url, page = self.agent.fetch(target_url)
+			except BrokenPathException:
+				continue
 			self.agent.target_saver.save(final_url, page)
 			
 
@@ -234,8 +249,12 @@ class TargetUrl(Target):
 		super(TargetUrl, self).__init__(dom_node, parent_url)
 
 	def process(self):
-		final_url, page = self.agent.fetch(self.url)
+		try:
+			final_url, page = self.agent.fetch(self.url)	
+		except BrokenPathException:
+				return
 		self.agent.target_saver.save(final_url, page)
+
 
 class FeedRegex(AbstractPathRegexObject, Feed):
 	def __init__(self, dom_node, parent_url=None):
@@ -245,7 +264,10 @@ class FeedRegex(AbstractPathRegexObject, Feed):
 
 	def process(self, page):
 		for target_url in self.findUrls(page):
-			final_url, page = self.agent.fetch(target_url)
+			try:
+				final_url, page = self.agent.fetch(target_url)
+			except BrokenPathException:
+				continue
 			self.processLists(page)
 	
 class FeedUrl(Feed):
@@ -253,13 +275,14 @@ class FeedUrl(Feed):
 		super(FeedUrl, self).__init__(dom_node, parent_url)
 
 	def process(self):
-		final_url, page = self.agent.fetch(self.url)
+		try:
+			final_url, page = self.agent.fetch(self.url)
+		except BrokenPathException:
+				return
 		self.processLists(page)
 
 class Crawler(object):
-	"""
-	The web crawler.
-	"""
+	""" The web crawler. """
 	name = "unknown"
 
 	feed_list = []
@@ -275,7 +298,6 @@ class Crawler(object):
 		# setup agent
 		self.agent = Agent()
 		self.agent.setup(dom_config.getElementsByTagName("agent")[0])
-
 
 	def build_crawler_from_dom(self, dom):
 		# Crawler path
