@@ -11,13 +11,13 @@
 			<target_url value="http://montreal.en.craigslist.ca/bogusblah/" />
 			<feed_url value="http://montreal.en.craigslist.ca/apa/">
 				<target_regex value="/apa/\d{8,12}.html" max_matches="5"/>
-				<feed_regex value="index\d{3}.html" max_depth="6">
+				<feed_regex value="index\d{3}.html" max_depth="6" max_matches="1">
 					<target_regex value="/apa/\d{8,12}.html" max_matches="5"/>
 				</feed_regex>
 			</feed_url>
 			<feed_url value="http://montreal.en.craigslist.ca/roo/">
 				<target_regex value="/roo/\d{8,12}.html" /> 
-				<feed_regex value="index\d{3}.html" max_depth="6">
+				<feed_regex value="index\d{3}.html" max_depth="6" max_mathes="1">
 					<target_regex value="/roo/\d{8,12}.html" />
 				</feed_regex>
 			</feed_url>

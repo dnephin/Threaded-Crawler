@@ -94,7 +94,7 @@ class Agent(object):
 			self.max_sleep = float(sleep_tag.getAttribute("max_seconds"))
 			log.info("Setup Agent random sleep with values %1.2f to %1.2f" % (self.min_sleep, self.max_sleep))
 			
-			self.setup = True
+			self.is_setup = True
 
 		def fetch(self, url):
 			" Open the url, check for valid response and return page url and page. "
@@ -162,14 +162,15 @@ class AbstractPathRegexObject(AbstractPathObject):
 
 	def setMaxMatches(self, dom_node):
 		if dom_node.hasAttribute("max_matches"):
-			self.max_matches = dom_node.getAttribute("max_matches")
+			self.max_matches = int(dom_node.getAttribute("max_matches"))
+			log.debug("Set max matches to %d." % (self.max_matches))
 
 	def setPattern(self, url):
 		self.regex_pattern = re.compile(url)
 
 	def findUrls(self, page):
 		match_list = []
-		log.debug("Finding urls on page for regex %s on page" % (self.regex_pattern.pattern))
+		log.debug("Finding urls on page for regex %s" % (self.regex_pattern.pattern))
 		for line in page.split("\n"):
 			m = self.regex_pattern.search(line)
 			if m:
@@ -189,12 +190,9 @@ class Feed(AbstractPathObject):
 	feed_regex_list = []
 	target_regex_list = []
 	target_url_list = []
-	max_depth = 0
 
 	def __init__(self, dom_node, parent_url=None):
 		super(Feed, self).__init__(dom_node, parent_url)
-		if dom_node.hasAttribute("max_depth"):
-			self.max_depth = dom_node.getAttribute("max_depth")
 		
 		for node in dom_node.childNodes:
 			if node.nodeType == node.ELEMENT_NODE:
@@ -225,14 +223,10 @@ class Target(AbstractPathObject):
 	pass
 
 class TargetRegex(AbstractPathRegexObject, Target):
-	max_depth = 0
-	
 	def __init__(self, dom_node, parent_url=None):
 		super(TargetRegex, self).__init__(dom_node, parent_url)
 		self.setPattern(self.orig_url)
 		self.setMaxMatches(dom_node)
-		if dom_node.hasAttribute("max_depth"):
-			self.max_depth = int(dom_node.getAttribute("max_depth"))
 		
 
 	def process(self, page):
@@ -257,18 +251,28 @@ class TargetUrl(Target):
 
 
 class FeedRegex(AbstractPathRegexObject, Feed):
+	max_depth = 0
+
 	def __init__(self, dom_node, parent_url=None):
 		super(FeedRegex, self).__init__(dom_node, parent_url)
 		self.setPattern(self.orig_url)
 		self.setMaxMatches(dom_node)
+		if dom_node.hasAttribute("max_depth"):
+			self.max_depth = int(dom_node.getAttribute("max_depth"))
 
-	def process(self, page):
+	def process(self, page, depth=0):
 		for target_url in self.findUrls(page):
 			try:
-				final_url, page = self.agent.fetch(target_url)
+				final_url, target_page = self.agent.fetch(target_url)
 			except BrokenPathException:
 				continue
-			self.processLists(page)
+			self.processLists(target_page)
+
+			# recurse max_depth times
+			if self.max_depth and depth < max_depth:
+				self.process(target_page, depth+1)
+		log.info("Completed feed %s." % (self.orig_url))
+
 	
 class FeedUrl(Feed):
 	def __init__(self, dom_node, parent_url=None):
@@ -280,6 +284,7 @@ class FeedUrl(Feed):
 		except BrokenPathException:
 				return
 		self.processLists(page)
+		log.info("Completed feed %s." % (self.url))
 
 class Crawler(object):
 	""" The web crawler. """
