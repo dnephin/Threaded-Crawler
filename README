@@ -1,0 +1,10 @@
+Threaded Crawler
+
+This web crawler is designed to be a generic and highly configurable crawler, that can quickly traverse sites, and pull content based on regex and other selection criteria.
+
+__Requirements__
+
+Uses BeatifulSoup to parse html pages
+Uses httplib3 for thread safe http connections, and connection pooling by domain
+Uses PIL for image processing
+

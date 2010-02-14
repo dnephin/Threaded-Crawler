@@ -7,7 +7,7 @@
 
 # NOTE: regex for path objects can not be in diretory or domain, only file
 
-# TODO: implement max_depth
+# DEPRICATED: see tcrawler
 
 from xml.dom.minidom import parse
 import logging
@@ -22,6 +22,18 @@ import random
 # logger for crawler module
 log = logging.getLogger("Crawler")
 log.addHandler(logging.StreamHandler())
+
+
+
+class TestSaver(object):
+	"""
+	Testing the saver interface.
+	"""
+	def __init__(self):
+		pass
+
+	def save(self, url, page):
+		print "url : %s, page: %s" %(url, 'SAVED')
 
 
 class BrokenPathException(Exception):

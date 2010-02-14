@@ -25,7 +25,12 @@ QUEUE_TIMEOUT = 1
 HTTP_TIMEOUT = 20
 MAX_RETRIES = 3
 
-# use one http agent (httpAgent class) and keep connection open using urllib3 (connection pool per domain) Must use redirect=False
+# TODO: change threads to end on interupt, instead of timeout in poll
+# TODO: have status thread be queriable from main input
+# TODO: use QueueItem in the queue instead of tuple
+# TODO: change logging to config file
+# TODO: use parseopts
+# TODO: move classes into their own files (run only has parseopts)
 """
 TODO:  move specific rules into a config somewhere, to turn into different crawler easily. + add rules
  Requirements:
@@ -33,9 +38,35 @@ TODO:  move specific rules into a config somewhere, to turn into different crawl
 	- excluded filename rules (regex list?) + function pointer ?
 	- save ruleset
 	- etc.
-	
-
 """
+
+# TODO:  use one http agent (httpAgent class) and keep connection open using urllib3 (connection pool per domain) Must use redirect=False
+class HttpAgent(object):
+	" Http fetch object. Holds a connection pool for domains. "
+	pass
+
+
+# TODO: move to new file
+class Configuration(object):
+	" Responsible for parsing the configuration, and creating the rules objects "
+	# recurse level, root save dir, default name parsing from url, retries, timeout
+	pass
+
+# TODO: move to new file
+class Rules(object):
+	" Determines which paths to follow, and what content to save "
+	pass
+
+
+
+class QueueItem(object):
+	" A structure to store requests in the queue "
+	def __init__(self, url, recurse_level=0, site_name=None, retries_remaining=0, from_tag=None):
+		self.url = url
+		self.recurse_level = recurse_level
+		self.site_name = site_name
+		self.retries_remaining = retries_remaining
+		self.from_tag = from_tag
 
 
 class HttpConnThread(threading.Thread):
