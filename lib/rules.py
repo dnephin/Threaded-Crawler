@@ -100,7 +100,6 @@ class ImageSaveRule(Rule):
 	# TODO: move to config
 	MIN_WIDTH = 250
 	MIN_HEIGHT = 300
-	imgParser = ImageFile.Parser()
 
 	def process(self, resp_item):
 		from_tag = resp_item.qitem.from_tag
@@ -108,21 +107,22 @@ class ImageSaveRule(Rule):
 			log.info('Skipping, %s not from img tag (%s).' % (
 					resp_item.response.geturl(), from_tag))
 			return None
+		imgParser = ImageFile.Parser()
 		try:
-			self.imgParser.feed(resp_item.content)
-			image = self.imgParser.close()
+			imgParser.feed(resp_item.content)
+			image = imgParser.close()
 		except IOError, err:
 			log.warn("IOError on image: %s:%s" % (resp_item.response.geturl(), err))
 			return None
 		
 		size = image.size
 		if size[0] < self.MIN_WIDTH or size[1] < self.MIN_HEIGHT:
-			log.debug("image does not meet requirements %d,%d" % (size[0], size[1]))
+			log.info("Skipping, image does not meet requirements %d,%d" % (size[0], size[1]))
 			return None
 
-		return self._save(image, resp_item.response.geturl(), resp_item.qitem.site_name)
+		return self._save(resp_item.content, resp_item.response.geturl(), resp_item.qitem.site_name)
 
-	def save(self, content, url, name):
+	def _save(self, content, url, name):
 		" save the content "
 		url_parts = urlparse.urlparse(url)
 		full_name = "%s/%s/%s" % (self.config['save_dir'], name, os.path.basename(url_parts.path))

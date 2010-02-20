@@ -2,6 +2,15 @@ Threaded Crawler
 
 This web crawler is designed to be a generic and highly configurable crawler, that can quickly traverse sites, and pull content based on regex and other selection criteria.
 
+__TODO Feature List__
+- switch from httplib2 to httplib3
+- refactor the rules
+- load config for each class
+- load rules from config
+- serialize command history
+- create a read_from_file version
+
+
 __Requirements__
 
 Uses BeatifulSoup to parse html pages

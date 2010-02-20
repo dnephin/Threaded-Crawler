@@ -12,11 +12,12 @@ import logging
 
 log = logging.getLogger("ThreadedCrawler")
 
-class UrlException(StandardError):
+class UrlException(Exception):
 	" Thrown when an http request fails "
 	def __init__(self, msg, requeue=True):
-		BaseException.__init__(self, msg)
+		Exception.__init__(self, msg)
 		self.requeue = requeue
+		self.message = msg
 
 	def __str__(self):
 		return "UrlException[%s,requeue=%s]" % (self.message, self.requeue)
@@ -33,7 +34,7 @@ class HttpAgent(object):
 		if HttpAgent.__inst:
 			raise ValueError("This singleton has already been created, Use getAgent()")
 		HttpAgent.__inst = self
-		self.http_timeout = config.get('http_timeout', 100)
+		self.http_timeout = config.get('http_timeout', 60)
 		self.retry_errors = config.get('retry_rerrors', True)
 		self.max_retry = config.get('max_retry', 3)
 

@@ -16,7 +16,6 @@ from rules import HtmlPageImageLinksRule, ImageSaveRule
 log = logging.getLogger("ThreadedCrawler")
 
 
-# TODO: use parseopts
 class ParseConfiguration(object):
 	" Responsible for parsing the configuration, and creating the rules objects "
 	# recurse level, root save dir, default name parsing from url, retries, timeout
@@ -125,6 +124,13 @@ class Crawler(object):
 
 	def _shutdown(self):
 		" end threads "
+		# consume all remaining tasks
+		try:
+			while self.url_queue.get(False):
+				self.url_queue.task_done()
+		except Empty:
+			pass
+		# send the shutdown
 		for thread in self.thread_pool:
 			qi = QueueItem(None, shutdown=True)
 			self.url_queue.put(qi)
