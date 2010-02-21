@@ -13,7 +13,7 @@ __TODO Feature List__
 
 __Requirements__
 
-Uses BeatifulSoup to parse html pages
-Uses httplib3 for thread safe http connections, and connection pooling by domain
-Uses PIL for image processing
+Uses BeatifulSoup to parse html pages (http://www.crummy.com/software/BeautifulSoup/)
+Uses urllib3 for thread safe http connections, and connection pooling by domain (http://code.google.com/p/urllib3/)
+Uses PIL for image processing (http://www.pythonware.com/products/pil/)
 

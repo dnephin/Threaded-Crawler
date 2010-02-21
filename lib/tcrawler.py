@@ -73,7 +73,7 @@ class Crawler(object):
 				self._clear_url_cache()
 				continue
 			print """
-			SAVE url, name, recurse_level=1 - save a url, using name for directory
+			SAVE url, name - save a url, using name for directory
 			QUIT - quit immediately
 			QUIT_WAIT - finish processing, quit gracefully
 			CLEAR - clear the url cache, so we can repeat urls
@@ -94,13 +94,6 @@ class Crawler(object):
 			print "Missing input arguments."
 			return
 
-		recurse_level = self.config.get('default_recurse_level', 1)
-		if len(args) == 3:
-			try:
-				recurse_level = int(args[2].lstrip('recurse_level='))
-			except ValueError, err:
-				log.warn("Invalid recurse_level %s, err" % args[2])
-
 		# make the directory if non-existent
 		dir_name = "%s/%s" % (self.save_dir, args[1])
 		if not os.path.isdir(dir_name):
@@ -109,7 +102,7 @@ class Crawler(object):
 			except (IOError,OSError), err:
 				log.warn("Error creating dir %s:%s" % (dir_name, err))
 				return
-		self.url_queue.put(QueueItem(args[0], recurse_level, args[1]))
+		self.url_queue.put(QueueItem(args[0], site_name=args[1]))
 	
 
 	def _status(self,):

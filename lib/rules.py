@@ -26,6 +26,8 @@ class Rule(object):
 		return None
 
 
+# TODO: a follow similar url form mainpage rule for pages2, page3, etc (using regex)
+
 # TODO: load specifics of rules from config file
 
 # TODO: Create a mixin to skip already queued/processed urls, thread safe cache
@@ -33,6 +35,9 @@ class Rule(object):
 # TODO: split this into two rules, with a common base class HtmlPage for testing if this is an html page
 class HtmlPageImageLinksRule(Rule):
 	" Process an html page "
+
+	def __init__(self, config):
+		self.max_recurse = config.get('max_recurse', 1)
 
 	def process(self, resp_item):
 		from_tag = resp_item.qitem.from_tag
@@ -42,19 +47,17 @@ class HtmlPageImageLinksRule(Rule):
 		recurse = resp_item.qitem.recurse_level
 		qitems = []
 		content = BeautifulSoup(resp_item.content)
-		if recurse > 0:
-			qitems += self.parse_pages(recurse-1, content, resp_item.response, 
+		if recurse < self.max_recurse:
+			qitems += self.parse_pages(recurse+1, content, resp_item.qitem.url, 
 					resp_item.qitem.site_name)
 
-		qitems += self.parse_content(content, resp_item.response, 
-				resp_item.qitem.site_name)
+		qitems += self.parse_content(content, resp_item.qitem.url, resp_item.qitem.site_name)
 		return qitems
 
 
-	def parse_pages(self, recurse_level, content, resp, name):
+	def parse_pages(self, recurse_level, content, url, name):
 		" Parse the html page for more pages "
 		qitems = []
-		url = resp.geturl()
 		a_tags = content.findAll('a')
 		log.info("Found %d a tags for '%s'" % (len(a_tags), url))
 		for a_tag in a_tags:
@@ -74,9 +77,8 @@ class HtmlPageImageLinksRule(Rule):
 		return qitems
 
 
-	def parse_content(self, content, resp, name):
+	def parse_content(self, content, url, name):
 		" Parse the html page for image content "
-		url = resp.geturl()
 		img_tags = content.findAll('img')
 		log.info("Found %d img tags for '%s'" % (len(img_tags), url))
 		qitems = []
@@ -105,14 +107,14 @@ class ImageSaveRule(Rule):
 		from_tag = resp_item.qitem.from_tag
 		if from_tag == None or from_tag.lower() != 'img':
 			log.info('Skipping, %s not from img tag (%s).' % (
-					resp_item.response.geturl(), from_tag))
+					resp_item.qitem.url, from_tag))
 			return None
 		imgParser = ImageFile.Parser()
 		try:
 			imgParser.feed(resp_item.content)
 			image = imgParser.close()
 		except IOError, err:
-			log.warn("IOError on image: %s:%s" % (resp_item.response.geturl(), err))
+			log.warn("IOError on image: %s:%s" % (resp_item.qitem.url, err))
 			return None
 		
 		size = image.size
@@ -120,7 +122,7 @@ class ImageSaveRule(Rule):
 			log.info("Skipping, image does not meet requirements %d,%d" % (size[0], size[1]))
 			return None
 
-		return self._save(resp_item.content, resp_item.response.geturl(), resp_item.qitem.site_name)
+		return self._save(resp_item.content, resp_item.qitem.url, resp_item.qitem.site_name)
 
 	def _save(self, content, url, name):
 		" save the content "
