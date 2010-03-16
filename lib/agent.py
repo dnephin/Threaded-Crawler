@@ -72,6 +72,9 @@ class HttpAgent(object):
 			raise UrlException("Timeout: %s" % err, requeue=requeue)
 		except MaxRetryError, err:
 			raise UrlException("MaxRetry for %s: %s" % (qitem.url, err))
+		# FIXME: dealing with a bug in urllib3
+		except NoneType, err:
+			raise UrlException("Unable to find host for: %s, %s" % (qitem.url, err))
 
 		# handle redirects
 		if resp.status in [301, 302, 303, 307] and 'location' in resp.headers:

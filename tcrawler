@@ -1,4 +1,6 @@
 #!/bin/bash
 
+
+cd ~/media/code/tcrawler
 # run the threaded crawler
 python ./lib/tcrawler.py $@

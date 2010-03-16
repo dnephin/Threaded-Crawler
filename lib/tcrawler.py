@@ -31,7 +31,7 @@ class Crawler(object):
 	"""
 	
 	# TODO move to config
-	num_threads= 100
+	num_threads = 100
 	save_dir = "/home/daniel/media/del"
 
 	def __init__(self):
