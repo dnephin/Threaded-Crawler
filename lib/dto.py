@@ -24,7 +24,7 @@ class ResponseItem(object):
 	" A structure to store responses from the HttpAgent "
 	def __init__(self, response, qitem):
 		self.response = response
-		self.content = response.data
+		self.content = response.read()
 		self.qitem = qitem
 
 	def __repr__(self):

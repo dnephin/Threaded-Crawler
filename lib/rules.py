@@ -105,7 +105,8 @@ class ImageSaveRule(Rule):
 
 	def process(self, resp_item):
 		from_tag = resp_item.qitem.from_tag
-		if from_tag == None or from_tag.lower() != 'img':
+		if (from_tag == None or from_tag.lower() != 'img') and \
+							resp_item.qitem.url[-4:] != '.jpg':
 			log.info('Skipping, %s not from img tag (%s).' % (
 					resp_item.qitem.url, from_tag))
 			return None
