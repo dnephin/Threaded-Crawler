@@ -4,52 +4,72 @@
 
 import threading
 import logging
-from agent import UrlException
 
 
-log = logging.getLogger("ThreadedCrawler")
+log = logging.getLogger("ProcessingThread")
 
-class ContentThread(threading.Thread):
+class WorkUnit(object):
 	"""
-	These threads consume qitems from the queue, use the HttpAgent to fetch the
-	content of that url, then send it through the rules for processing. Finally
-	adding any produced QueueItems back into the Queue.
+	This class represents a single unit of work that will be run on a
+	WorkerThread.  These units will be passed to the execute() method
+	of the Command object. Usually represents a url to fetch, or an
+	item to store locally.
 	"""
-	def __init__(self, url_queue, url_set, agent, rules):
-		" Setup thread, and save references to queue, url set, agent and rules "
-		self.url_set = url_set
-		self.url_queue = url_queue
-		self.agent = agent
-		self.rule_list = rules
+
+	def __init__(self, chain_commands=None, url=None, meta_data=None):
+		"""
+		Initialize a new WorkUnit object. 
+		Parameters:
+			chain_commands - a list containing Command objects
+			url - the to fetch to carry out this unit of work
+			meta_data - data that has been build up by previous commands
+						that executes previously in the chain
+		"""
+		self.chain_commands = chain_commands
+		self.url = url
+		self.meta_data = meta_data
+		self.shutdown = False
+
+	def isShutdown(self):
+		" Returns true when this WorkUnit represents a shutdown request. "
+		return self.shutdown
+
+
+
+class ProcessingThread(threading.Thread):
+	"""
+	This thread consumes WorkUnit objects from the queue.  It calls
+	execute() on each Command object contained in the chain of the
+	WorkUnit object.  It then retrieves any newly created WorkUnit
+	objects from the Command and adds them back into the queue.
+	"""
+
+	def __init__(self, work_queue):
+		"""
+		Initialize the thread, and start it. 
+		Parameters:
+			work_queue - a thread safe queue of WorkUnit objects
+		"""
+		self.work_queue = work_queue
 		threading.Thread.__init__(self)
 		self.start()
 
 	def run(self):
-		" run the thread, comsume from queue, fetch url, add to queue  "
+		" Run the thread, comsume from queue, execute Command, add to queue.  "
 		while True:
-			qitem = self.url_queue.get()
-			if qitem.shutdown:
+			work_unit = self.work_queue.get()
+			if work_unit.isShutdown():
+				log.info("Received shutdown request.")
 				return
-			log.info("Processing: %s" % (qitem))
+			log.info("Processing: %s" % (work_unit))
 			
-			# fetch url
-			try:
-				resp_item = self.agent.fetch(qitem)
-			except UrlException, err:
-				if err.requeue:
-					self.url_queue.put(qitem)
-				log.warn(err)
-				self.url_queue.task_done()
-				continue
+			# execute commands 
+			new_work_units = []
+			for command in work_unit.chain_commands:
+				try:
+					new_work_units.extend(command.execute(work_unit))
+				except Exception, err:
+					log.warn("Unexpected Exception from Command: %s " % err)
+					continue
 
-			qitem_list = []
-			for rule in self.rule_list:
-				qitems = rule.process(resp_item)
-				if qitems:
-					qitem_list += qitems
-
-			for qitem in qitem_list:
-				self.url_queue.put(qitem)
-			# clear task
-			self.url_queue.task_done()
-
+			self.work_queue.task_done()

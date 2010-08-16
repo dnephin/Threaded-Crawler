@@ -4,14 +4,12 @@ This web crawler is designed to be a generic and highly configurable crawler, th
 
 __TODO Feature List__
 - better logging (seperate verbose messages from useful ones, such as 'image saved', 'page followed',  + summary stats)
-- refactor the rules
 - load config for each class
-- load rules from config
 
 
 __Requirements__
 
 Uses BeatifulSoup to parse html pages (http://www.crummy.com/software/BeautifulSoup/)
--Not in use- Uses urllib3 for thread safe http connections, and connection pooling by domain (http://code.google.com/p/urllib3/)
 Uses PIL for image processing (http://www.pythonware.com/products/pil/)
+-Not in use- Uses urllib3 for thread safe http connections, and connection pooling by domain (http://code.google.com/p/urllib3/)
 

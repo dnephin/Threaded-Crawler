@@ -1,5 +1,9 @@
 """
- Rules for which url to follow, and which content to save to disk.
+ Command objects used by the tcrawler, and base classes for more specific
+ Command objects.
+
+ These Commands are responsible for executing a task on a ProcessingThread
+ given a WorkUnit object.
 """
 
 import logging

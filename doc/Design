@@ -1,0 +1,13 @@
+
+Design Documentation for Threaded Web Crawler
+
+
+
+__Command objects__
+
+__Processing Threads and Work Units__
+
+
+__Singleton Agents__
+
+__Global Configuration Store__
