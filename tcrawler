@@ -1,6 +1,4 @@
 #!/bin/bash
 
-
-cd ~/media/code/tcrawler
-# run the threaded crawler
+export PYTHONPATH=./conf
 python ./lib/tcrawler.py $@

@@ -4,6 +4,7 @@
 
 import threading
 import logging
+import traceback
 
 
 log = logging.getLogger("ProcessingThread")
@@ -16,23 +17,28 @@ class WorkUnit(object):
 	item to store locally.
 	"""
 
-	def __init__(self, chain_commands=None, url=None, meta_data=None):
+	def __init__(self, command=None, url=None, meta_data=None, shutdown=False):
 		"""
 		Initialize a new WorkUnit object. 
 		Parameters:
-			chain_commands - a list containing Command objects
+			command - a Command objects that performs an operation
 			url - the to fetch to carry out this unit of work
 			meta_data - data that has been build up by previous commands
 						that executes previously in the chain
 		"""
-		self.chain_commands = chain_commands
+		self.command = command
 		self.url = url
 		self.meta_data = meta_data
-		self.shutdown = False
+		self.shutdown = shutdown
 
 	def isShutdown(self):
 		" Returns true when this WorkUnit represents a shutdown request. "
 		return self.shutdown
+
+	def __str__(self):
+		if self.isShutdown():
+			return "WorkUnit - Shutdown"
+		return "WorkUnit - command%s, url[%s]" % (self.command, self.url)
 
 
 
@@ -59,17 +65,19 @@ class ProcessingThread(threading.Thread):
 		while True:
 			work_unit = self.work_queue.get()
 			if work_unit.isShutdown():
-				log.info("Received shutdown request.")
+				log.debug("Received shutdown request.")
+				self.work_queue.task_done()
 				return
 			log.info("Processing: %s" % (work_unit))
 			
-			# execute commands 
-			new_work_units = []
-			for command in work_unit.chain_commands:
-				try:
-					new_work_units.extend(command.execute(work_unit))
-				except Exception, err:
-					log.warn("Unexpected Exception from Command: %s " % err)
-					continue
+			# execute command 
+			try:
+				new_work_units = work_unit.command.execute(work_unit)
+			except Exception, err:
+				log.warn("Unexpected Exception from Command: %s\n%s " % (err, traceback.format_exc()))
+				return
 
+			if new_work_units:
+				for new_work_unit in new_work_units:
+					self.work_queue.put(new_work_unit)
 			self.work_queue.task_done()

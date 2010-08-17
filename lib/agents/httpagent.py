@@ -9,6 +9,7 @@ import logging
 
 # urllib2
 import urllib2
+from cookielib import CookieJar
 import socket
 from config import GlobalConfiguration
 
@@ -52,8 +53,15 @@ class HttpAgent(object):
 
 	def configure(self):
 		" Configure the HttpAgent from a HttpAgentConfig object or use defaults. "
+		handlers = []
 		config = GlobalConfiguration.get(self.__class__.__name__)
 		self.http_timeout = config.get('http_timeout', 60)
+
+		if config.get('enable_cookies', False):
+			cookie_jar = CookieJar()
+			handlers.append(urllib2.HTTPCookieProcessor(cookie_jar))
+
+		self.opener = urllib2.build_opener(*tuple(handlers))
 
 
 	@staticmethod
@@ -70,7 +78,7 @@ class HttpAgent(object):
 		
 		try:
 			log.debug("Fetching %s." % (url))
-			resp = urllib2.urlopen(url, timeout=self.http_timeout)
+			resp = self.opener.open(url, timeout=self.http_timeout)
 			http_response.content = resp.read() 
 			http_response.code = 200
 			log.debug("Fetched  %s." % (resp.geturl()))

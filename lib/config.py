@@ -16,4 +16,4 @@ class GlobalConfiguration(object):
 
 	@staticmethod
 	def get(name):
-		return GlobalConfiguration.get(name, None)
+		return GlobalConfiguration.config.get(name, None)
