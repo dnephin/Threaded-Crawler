@@ -25,6 +25,6 @@ class StoreToJobDatabase(HttpFetchCommand):
 		" Fetch the url to save, and store it. "
 		resp = self.fetch(work_unit.url)
 
-		print "Save %s" % (work_unit.url)
+		print "Save %s, %s" % (work_unit.url, work_unit.meta_data)
 #		if resp.success():
 #			self.save(resp.content, work_unit.meta_data)
