@@ -34,6 +34,16 @@ class Command(object):
 		return "<%s>" % self.__class__.__name__
 
 
+	def get_command_chain(self):
+		"""
+		Return the chain of Commands assigned to this Command. 
+		
+		@return: the list of Command objects
+		@rtype : list
+		"""
+		return self.chain
+
+
 
 class HttpFetchCommand(Command):
 	" Base class for all commands that fetch something using the HttpAgent. "
@@ -122,10 +132,18 @@ class HttpFollowCommand(HttpFetchCommand):
 
 
 	def build_work_units(self, url_dict, work_unit):
-		" Build a list of WorkUnit objects from a url_dict object from parse_urls. "
+		""" 
+		Build a list of WorkUnit objects from a url_dict object from parse_urls. 
+
+		@param url_dict: map of urls to meta data captured from the regex
+		@type  url_dict: dictionary
+		@param work_unit: a L{threads.WorkUnit} object that was given to this
+				command to perform tasks with
+		@type  work_unit: L{threads.WorkUnit}
+		"""
 		work_unit_list = []
 		log.debug("Building %d new work units." % (len(self.chain) * len(url_dict)))
-		for command in self.chain:
+		for command in self.get_command_chain():
 			for url, meta_data in url_dict.iteritems():
 				if work_unit.meta_data:
 					combined_meta_data = work_unit.meta_data.copy()
@@ -171,6 +189,7 @@ class FollowAPartial(FollowA):
 		FollowA.__init__(self, url=url, regex=regex, captures=captures, chain=chain)
 
 	def get_soup_content(self, content):
+		# FIXME: BUG #100
 		matches = self.stop_regex.search(content)
 		if not matches:
 			log.warn("Stop regex (%s) was not found in the document %s" % (self.regex.pattern, self.url))
@@ -183,33 +202,13 @@ class RecursiveFollowA(FollowAPartial):
 	"""
 	Follow the <A href=""> links that match the regex until some condition 
 	is met.  This condition is a regex pattern that will appear on the page.
+	This Command adds itself to its own chain of commands.
 	"""
 
-	def get_soup_content(self, content):
-		"""
-		Add this command to the chain of commands if the stop_regex has not been
-		found.
-		"""
-		# TODO 
+	def get_command_chain(self):
+		" @override "
+		return self.chain + [self]
 
-
-	def build_work_units(self, url_dict, work_unit):
-		" Build a list of WorkUnit objects from a url_dict object from parse_urls. "
-		work_unit_list = []
-		log.debug("Building %d new work units." % (len(self.chain) * len(url_dict)))
-		for command in self.chain:
-			for url, meta_data in url_dict.iteritems():
-				if work_unit.meta_data:
-					combined_meta_data = work_unit.meta_data.copy()
-					combined_meta_data.update(meta_data)
-				else:
-					combined_meta_data = meta_data
-
-				new_wu = WorkUnit(command=command, url=url, 
-						meta_data=combined_meta_data)
-				work_unit_list.append(new_wu)
-
-		return work_unit_list
 
 class FollowIMG(HttpFollowCommand):
 	"""

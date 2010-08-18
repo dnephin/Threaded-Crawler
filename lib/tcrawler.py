@@ -21,10 +21,25 @@ class Crawler(object):
 
 	DEFAULT_NUMBER_THREADS = 100
 	
-	def __init__(self, config_module):
-		" Setup resources "
+	def __init__(self, route, crawler_config, agent_config):
+		"""
+		Create a new instance of Crawler object. Creates the work queue
+		and thread pool.
 
-		self.load_config(config_module)
+		@param route: the list of command objects that define the route
+					the crawler will traverse
+		@type  route: list of L{commands.base.Command} objects
+		@param crawler_config: configuration of the crawler
+		@type  crawler_config: dictionary
+		@param agent_config: configuration map for any agents the crawler will use
+		@type  agent_config: dictionary
+		"""
+		self.config = {}
+		self.config['number_threads'] = crawler_config.get(
+					'number_threads', self.DEFAULT_NUMBER_THREADS)
+
+		GlobalConfiguration.config.update(agent_config)
+		self.route = route 
 
 		# Queue of work units
 		self.work_queue = Queue()
@@ -35,25 +50,6 @@ class Crawler(object):
 			self.thread_pool.append(ProcessingThread(self.work_queue))
 		log.info("Started %d threads." % self.config['number_threads'])
 
-	def load_config(self, config_module):
-		" Read the config module, and load settings into GlobalConfiguration. "
-
-		# crawler config
-		self.config = {}
-		if hasattr(config_module, 'CRAWLER_CONFIG'):
-			self.config['number_threads'] = config_module.CRAWLER_CONFIG.get(
-					'number_threads', self.DEFAULT_NUMBER_THREADS)
-		else:
-			self.config['number_threads'] = self.DEFAULT_NUMBER_THREADS
-
-		# Agents config
-		if hasattr(config_module, 'AGENT_CONFIG'):
-			GlobalConfiguration.config.update(config_module.AGENT_CONFIG)
-
-		# Route
-		self.route = config_module.ROUTE
-
-			
 
 	def start(self):
 		" Build the first Work Unit and send it to the Queue. "
@@ -98,11 +94,24 @@ def load_config_module():
 	if len(sys.argv) < 2:
 		print "No config module specified."
 		sys.exit(-1)
-	return __import__(sys.argv[1])
+	config_module = __import__(sys.argv[1])
+
+	if not hasattr(config_module, 'AGENT_CONFIG'):
+		sys.stderr('Config module requires an "AGENT_CONFIG" dictionary')
+		sys.exit(-1)
+	if not hasattr(config_module, 'CRAWLER_CONFIG'):
+		sys.stderr('Config module requires an "CRAWLER_CONFIG" dictionary')
+		sys.exit(-1)
+	if not hasattr(config_module, 'ROUTE'):
+		sys.stderr('Config module requires an "ROUTE" dictionary')
+		sys.exit(-1)
+
+	return (config_module.ROUTE, config_module.CRAWLER_CONFIG, 
+			config_module.AGENT_CONFIG)
 
 
 if __name__ == "__main__":
 	import logging.config
 	logging.config.fileConfig('./conf/logging.conf')
-	crawler = Crawler(load_config_module())
+	crawler = Crawler(*load_config_module())
 	crawler.start()

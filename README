@@ -11,5 +11,6 @@ __Requirements__
 
 Uses BeatifulSoup to parse html pages (http://www.crummy.com/software/BeautifulSoup/)
 Uses PIL for image processing (http://www.pythonware.com/products/pil/)
+Uses epydoc for documentation
 -Not in use- Uses urllib3 for thread safe http connections, and connection pooling by domain (http://code.google.com/p/urllib3/)
 

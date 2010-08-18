@@ -72,7 +72,7 @@ class HttpAgent(object):
 
 	def fetch(self, url):
 		" fetch a url, and return the response object "
-		# TODO: retry on content read fail, and config for retry and timeout
+		# FIXME: BUG #100 retry on content read fail, and config for retry and timeout
 
 		http_response = HttpResponse()
 		

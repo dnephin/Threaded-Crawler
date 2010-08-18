@@ -1,0 +1,9 @@
+
+- Improved logging/statistics
+	- examine log levels and different loggers
+	- add run statistics (items saved, errors, etc)
+
+- Status thread for interactive status
+
+- BUG 100 
+- Infinitere cursion with Recursive Command
