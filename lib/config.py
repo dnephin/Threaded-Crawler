@@ -10,10 +10,16 @@
 
 
 class GlobalConfiguration(object):
-	" Stores configuration for any agents. "
+	" Stores configuration for singleton agents. "
 
 	config = {}
 
 	@staticmethod
 	def get(name, default=None):
+		"""
+		Retrieve configuration based on class name.
+
+		@return: the configuration map for the class with name, or None
+		@rtype : dict
+		"""
 		return GlobalConfiguration.config.get(name, default)

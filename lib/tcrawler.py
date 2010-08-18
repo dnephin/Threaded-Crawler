@@ -80,8 +80,9 @@ class Crawler(object):
 		return
 
 	def _shutdown(self):
-		" end threads "
-		# send the shutdown
+		"""
+		Send a shutdown WorkUnit into the Queue for each thread. 
+		"""
 		for thread in self.thread_pool:
 			self.work_queue.put(WorkUnit(shutdown=True))
 		for thread in self.thread_pool:
@@ -90,6 +91,13 @@ class Crawler(object):
 
 
 def load_config_module():
+	"""
+	Load the configuration module specified as a command line argument to this 
+	script. 
+
+	@return: a tuple of route, crawler_config, agent_config
+	@rtype : tuple (of three dict)
+	"""
 	import sys
 	if len(sys.argv) < 2:
 		print "No config module specified."
