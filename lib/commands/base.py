@@ -97,7 +97,7 @@ class HttpFollowCommand(HttpFetchCommand):
 
 		resp = self.fetch(work_unit.url)
 
-		if not resp.success:
+		if not resp.success():
 			# TODO: better logging
 			log.warn("Failed url: %s" % work_unit.url)
 			return None
@@ -105,7 +105,7 @@ class HttpFollowCommand(HttpFetchCommand):
 		url_dict = self.parse_urls(
 				self.get_soup_content(resp.content),
 				self.TAG_REGEX, self.URL_PROPERTY,
-				base_url=work_unit.url,
+				base_url=resp.url,
 				pattern=self.regex, 
 				captures=self.captures)
 
@@ -142,6 +142,7 @@ class HttpFollowCommand(HttpFetchCommand):
 				meta[captures[i]] = matches.group(i + 1)
 			
 			abs_url = urlparse.urljoin(base_url, tag_item[url_property])
+			log.debug("Built %s from [%s][%s]" % (abs_url, base_url, tag_item[url_property]))
 			url_dict[abs_url] = meta
 
 		return url_dict
@@ -205,12 +206,12 @@ class FollowAPartial(FollowA):
 		FollowA.__init__(self, url=url, regex=regex, captures=captures, chain=chain)
 
 	def get_soup_content(self, content):
-		# FIXME: BUG #100
 		matches = self.stop_regex.search(content)
 		if not matches:
 			log.warn("Stop regex (%s) was not found in the document." % (self.regex.pattern))
 		else:
 			content = content[:matches.start()]
+			
 		return super(FollowAPartial, self).get_soup_content(content)
 
 

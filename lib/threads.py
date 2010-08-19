@@ -87,7 +87,8 @@ class ProcessingThread(threading.Thread):
 			try:
 				new_work_units = work_unit.command.execute(work_unit)
 			except Exception, err:
-				log.warn("Unexpected Exception from Command: %s\n%s " % (err, traceback.format_exc()))
+				log.warn("Unexpected Exception from %s: %s\n%s " % (work_unit.command,
+						err, traceback.format_exc()))
 				self.stop_working()
 				continue
 

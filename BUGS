@@ -67,15 +67,3 @@ Traceback (most recent call last):
     raise BadStatusLine(line)
 BadStatusLine
 
-BUG #100
-Happens when the connection times out, since content is none  Should retry.
-
-Traceback (most recent call last):
-  File "/home/daniel/media/code/JobSite/projects/crawler/lib/threads.py", line 75, in run
-    new_work_units = work_unit.command.execute(work_unit)
-  File "/home/daniel/media/code/JobSite/projects/crawler/lib/commands/base.py", line 90, in execute
-    self.get_soup_content(resp.content),
-  File "/home/daniel/media/code/JobSite/projects/crawler/lib/commands/base.py", line 192, in get_soup_content
-    matches = self.stop_regex.search(content)
-TypeError: expected string or buffer
-

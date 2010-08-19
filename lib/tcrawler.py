@@ -13,9 +13,9 @@ from config import GlobalConfiguration
 log = logging.getLogger("ThreadedCrawler")
 
 
-class Crawler(object):
+class CrawlerLoader(object):
 	""" 
-	The main control class for the crawler. Responsible for reading the
+	The tcrawler Loader. Responsible for reading the
 	configuration, storing agent configuration in the GlobalConfiguration,
 	starting thread pool and sending the first Command into the Queue.
 	"""
@@ -82,13 +82,15 @@ class Crawler(object):
 		"""
 		time.sleep(1)
 		work_done_count = 0
-		while work_done_count < 3:
+		work_done_max = 4
+		while work_done_count < work_done_max:
 			# FIXME: this breaks if a thread crashes
 			# TODO: superclass semaphore to make _Semaphore__Value atomic ?
 			if (self.work_queue.empty() and 
 					self.working_semaphore._Semaphore__value == self.config['number_threads']):
 				work_done_count += 1
-			time.sleep(0.5)
+				log.warn("Shutting down in %d..." % (work_done_max - work_done_count))
+			time.sleep(1)
 		return
 
 	def _shutdown(self):
@@ -133,5 +135,5 @@ def load_config_module():
 if __name__ == "__main__":
 	import logging.config
 	logging.config.fileConfig('./conf/logging.conf')
-	crawler = Crawler(*load_config_module())
+	crawler = CrawlerLoader(*load_config_module())
 	crawler.start()

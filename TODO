@@ -5,6 +5,4 @@
 
 - Command thread to pause/status/resume
 
-- BUG 100
-- Fix recurse command
 - unit test for the tcrawler (The queue)

@@ -19,7 +19,7 @@ class HttpResponse(object):
 	A data transport object that holds the data returned from an HTTP Request.
 	"""
 
-	def __init__(self, code=0, message="", content=None):
+	def __init__(self, code=0, message="", content=None, url=None):
 		"""
 		Instantiate a new HttpResponse object.
 
@@ -33,6 +33,7 @@ class HttpResponse(object):
 		self.code = code
 		self.message = message
 		self.content = content
+		self.url = url
 
 	def success(self):
 		"""
@@ -40,7 +41,7 @@ class HttpResponse(object):
 				False otherwise.
 		@rtype : boolean
 		"""
-		return (code == 200)
+		return (self.code == 200)
 
 
 class HttpAgent(object):
@@ -118,6 +119,7 @@ class HttpAgent(object):
 				resp = self.opener.open(url, timeout=self.http_timeout)
 				http_response.content = resp.read() 
 				http_response.code = 200
+				http_response.url = resp.geturl()
 				log.debug("Fetched  %s." % (resp.geturl()))
 				break
 
