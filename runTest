@@ -3,4 +3,5 @@
 
 
 export PYTHONPATH=./conf:./lib
-python ./test/agents/httpagent.py
+python ./test/agents/test_httpagent.py
+python ./test/test_threads.py

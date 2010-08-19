@@ -5,4 +5,5 @@
 
 - Command thread to pause/status/resume
 
+- unit test for threads 
 - unit test for the tcrawler (The queue)
