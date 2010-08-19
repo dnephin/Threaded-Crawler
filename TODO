@@ -3,7 +3,8 @@
 	- examine log levels and different loggers
 	- add run statistics (items saved, errors, etc)
 
-- Status thread for interactive status
+- Command thread to pause/status/resume
 
-- BUG 100 
-- Infinitere cursion with Recursive Command
+- BUG 100
+- Fix recurse command
+- unit test for the tcrawler (The queue)

@@ -83,7 +83,7 @@ class HttpAgent(object):
 			cookie_jar = CookieJar()
 			handlers.append(urllib2.HTTPCookieProcessor(cookie_jar))
 
-		self.max_retry = config.get('max_retry', 2)
+		self.max_retry = config.get('max_retry', 3)
 
 		self.opener = urllib2.build_opener(*tuple(handlers))
 
@@ -121,20 +121,23 @@ class HttpAgent(object):
 				log.debug("Fetched  %s." % (resp.geturl()))
 				break
 
-			except socket.timeout, err:
+			except urllib2.HTTPError, err:
+				http_response.code = err.code
+				http_response.message = err.strerror
+				break
+
+			except (socket.timeout, urllib2.URLError), err:
+				if type(err) == urllib2.URLError and not type(err.reason) == socket.timeout:
+					if hasattr(err.reason, 'strerror'):
+						reason = err.reason.strerror
+					else:
+						rason = err.reason
+					http_response.message = reason
+					log.warn("Unexpected Error %s: %s" % (url, reason))
+					break
+					
 				http_response.message = err
 				log.warn("Socket timeout on %s [retry: %d]: %s" % (url, retry_count, err))
 				retry_count += 1
-				continue
-
-			except urllib2.HTTPError, err:
-				http_response.code = err.code
-				http_response.message = err.message
-				break
-
-			except urllib2.URLError, err:
-				http_response.message = err.reason
-				log.warn("Unexpected Error %s: %s" % (url, err))
-				break
 
 		return http_response 

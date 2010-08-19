@@ -4,6 +4,7 @@
 
 import logging
 from Queue import Queue, Empty
+from threading import Semaphore
 import time
 
 from threads import ProcessingThread, WorkUnit 
@@ -45,9 +46,10 @@ class Crawler(object):
 		self.work_queue = Queue()
 		# processing threads
 		self.thread_pool = []
+		self.working_semaphore = Semaphore(self.config['number_threads'])
 
 		for i in range(self.config['number_threads']):
-			self.thread_pool.append(ProcessingThread(self.work_queue))
+			self.thread_pool.append(ProcessingThread(self.work_queue, self.working_semaphore))
 		log.info("Started %d threads." % self.config['number_threads'])
 
 
@@ -58,7 +60,7 @@ class Crawler(object):
 			self.work_queue.put(work_unit)
 
 		try:
-			self._wait_on_queue()
+			self._wait_on_work()
 		except KeyboardInterrupt, err:
 			log.warn("Caught KeyboardInteruupt, shutting down.")
 			self._clear_queue()
@@ -74,9 +76,19 @@ class Crawler(object):
 			pass
 
 	# TODO: fix so that it can be killed
-	def _wait_on_queue(self):
-		time.sleep(3)
-		self.work_queue.join()
+	def _wait_on_work(self):
+		"""
+		Wait for all the processing threads to complete their tasks.
+		"""
+		time.sleep(1)
+		work_done_count = 0
+		while work_done_count < 3:
+			# FIXME: this breaks if a thread crashes
+			# TODO: superclass semaphore to make _Semaphore__Value atomic ?
+			if (self.work_queue.empty() and 
+					self.working_semaphore._Semaphore__value == self.config['number_threads']):
+				work_done_count += 1
+			time.sleep(0.5)
 		return
 
 	def _shutdown(self):

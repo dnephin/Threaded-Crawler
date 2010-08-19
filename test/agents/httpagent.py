@@ -60,10 +60,10 @@ class TestHttpAgent(unittest.TestCase):
 		a = HttpAgent.getAgent()
 
 		self.assertEquals(a.fetch('http://www.google.ca').code, 200)
-		self.assertEquals(type(a.fetch('http://gbogusdomain.com/').message), socket.gaierror)
+		self.assertEquals(a.fetch('http://gbogus123154123213.com/').message, "Name or service not known")
 		self.assertEquals(a.fetch('http://www.google.ca/doesnotexist').code, 404)
 		a.http_timeout = 1
-		self.assertEquals(a.fetch('http://pontiffx.homeip.net').code, 0)
+		self.assertEquals(a.fetch('http://example.com:666').code, 0)
 		# TODO: more error conditions
 
 

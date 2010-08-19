@@ -54,9 +54,10 @@ class ProcessingThread(threading.Thread):
 	execute() on the Command object in the WorkUnit.  It then retrieves any 
 	newly created WorkUnit objects from the Command and adds them back into 
 	the queue.
-	"""
 
-	def __init__(self, work_queue):
+	"""
+	# TODO: doc semaphore param
+	def __init__(self, work_queue, work_semaphore):
 		"""
 		Initialize the thread, and start it.
 
@@ -64,6 +65,7 @@ class ProcessingThread(threading.Thread):
 		@type  work_queue: Queue
 		"""
 		self.work_queue = work_queue
+		self.work_semaphore = work_semaphore
 		threading.Thread.__init__(self)
 		self.start()
 
@@ -75,9 +77,10 @@ class ProcessingThread(threading.Thread):
 		"""
 		while True:
 			work_unit = self.work_queue.get()
+			self.start_working()
 			if work_unit.isShutdown():
 				log.debug("Received shutdown request.")
-				self.work_queue.task_done()
+				self.stop_working()
 				return
 			log.info("Processing: %s" % (work_unit))
 			
@@ -85,10 +88,27 @@ class ProcessingThread(threading.Thread):
 				new_work_units = work_unit.command.execute(work_unit)
 			except Exception, err:
 				log.warn("Unexpected Exception from Command: %s\n%s " % (err, traceback.format_exc()))
-				self.work_queue.task_done()
+				self.stop_working()
 				continue
 
 			if new_work_units:
 				for new_work_unit in new_work_units:
 					self.work_queue.put(new_work_unit)
-			self.work_queue.task_done()
+			self.stop_working()
+
+
+	def stop_working(self):
+		"""
+		Notify the queue that the work is complete on the last unit that was
+		pulled, and set the working status flag to False.
+		"""
+		self.work_queue.task_done()
+		self.work_semaphore.release()
+
+
+	def start_working(self):
+		"""
+		Increment the working counter.
+		"""
+		self.work_semaphore.acquire()
+
