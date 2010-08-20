@@ -99,7 +99,7 @@ class FileSystemAgent(object):
 				else:
 					return FSOperationResult(False, 
 							"File in the way of directory creation: %s" % (full_path))
-			os.mkdirs(full_path)
+			os.makedirs(full_path)
 
 		full_name = "%s/%s" % (full_path, name)
 		if os.path.isfile(full_name):
@@ -111,6 +111,7 @@ class FileSystemAgent(object):
 			else:
 				return FSOperationResult(False, "File exists, skipping: %s" % (full_name))
 
+		
 		try:
 			fh = open(full_name, 'w')
 			fh.write(content)
@@ -131,7 +132,7 @@ class FileSystemAgent(object):
 		@return:  a two item tuple with the real system path, and the files name
 		@rtype : tuple (of strings)
 		"""
-		full_name = os.path.join(self.base_path, filename)
+		full_name = os.path.join(self.base_path, './%s' % filename)
 		return os.path.split(os.path.normpath(full_name))
 
 
