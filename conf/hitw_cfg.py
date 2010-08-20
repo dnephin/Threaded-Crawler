@@ -1,7 +1,6 @@
 """
 Configuration for hitw.
 
-
 """
 
 

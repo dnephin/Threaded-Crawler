@@ -2,10 +2,7 @@ Threaded Crawler
 
 This web crawler is designed to be a generic and highly configurable crawler, that can quickly traverse sites, and pull content based on regex and other selection criteria.
 
-__TODO Feature List__
-- better logging (seperate verbose messages from useful ones, such as 'image saved', 'page followed',  + summary stats)
-- load config for each class
-
+__Features__
 
 __Requirements__
 
@@ -14,3 +11,10 @@ Uses PIL for image processing (http://www.pythonware.com/products/pil/)
 Uses epydoc for documentation
 -Not in use- Uses urllib3 for thread safe http connections, and connection pooling by domain (http://code.google.com/p/urllib3/)
 
+
+
+
+__Development__
+
+The 'build' script in the root of the checkout can be used to clean .pyc files, run unit tests, and package this as an egg.
+Documentation is in doc/API.

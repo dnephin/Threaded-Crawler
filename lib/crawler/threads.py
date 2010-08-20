@@ -54,6 +54,16 @@ class QueueWatcher(threading._Semaphore):
 	"""
 
 	def __init__(self, value=1, verbose=None, queue=None):
+		"""
+		Initialize the QueueWatcher.
+
+		@param value: the number of acquires allowed to the semaphore
+		@type  value: int
+		@param verbose:	enable verbosity
+		@type  verbose: boolean
+		@param queue: a Queue object that will be checked for empty
+		@type  queue: Queue
+		"""
 		if not queue:
 			raise ValueError("A Queue object is required for the QueueWatcher.")
 		self.queue = queue
@@ -62,11 +72,11 @@ class QueueWatcher(threading._Semaphore):
 
 	def is_work_complete(self):
 		"""
-		This method checks to see if the queue is empty and no worker threads
-		are working.  If this is the case, work should be complete.
+		This method checks to see if the queue is empty and that the semaphore
+		has not been acquired by any threads.
 
 		@return: True if the queue is empty and the semaphore value equals
-				the count of active worker threads.
+				its max possible value.
 		@rtype: boolean
 		"""
 		self._Semaphore__cond.acquire()
@@ -89,7 +99,6 @@ class ProcessingThread(threading.Thread):
 	the queue.
 
 	"""
-	# TODO: doc semaphore param
 	def __init__(self, work_queue, work_semaphore):
 		"""
 		Initialize the thread, and start it.

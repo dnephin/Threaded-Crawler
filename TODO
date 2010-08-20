@@ -1,7 +1,12 @@
 
-- Improved logging/statistics
-	- examine log levels and different loggers
-	- add run statistics (items saved, errors, etc)
 
-- Command thread to pause/status/resume
+__Minor Additions__
+	- rule for saving files to disk
+	- finish job save rule
+
+
+__Feature 1__
+	- add run statistics (items saved, errors, etc)
+		- single stats object with locks
+	- Command thread to pause/status/resume
 
