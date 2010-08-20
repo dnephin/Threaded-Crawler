@@ -44,7 +44,7 @@ class Command(object):
 		Return the chain of Commands assigned to this Command. 
 		
 		@return: the list of Command objects
-		@rtype : list
+		@rtype: list
 		"""
 		return self.chain
 
@@ -236,7 +236,6 @@ class RecursiveFollowA(FollowAPartial):
 	"""
 
 	def get_command_chain(self):
-		" @override "
 		return self.chain + [self]
 
 

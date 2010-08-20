@@ -1,4 +1,7 @@
 
+# generated docs
+doc/API/*
+
 # vim swap files
 *.swp
 .vim.sess

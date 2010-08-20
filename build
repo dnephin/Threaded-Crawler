@@ -25,6 +25,10 @@ elif [ "$1" == "test_mod" ]; then
 elif [ "$1" == "clean" ]; then
 	find -name \*.pyc -exec rm {} \;
 
+elif [ "$1" == "doc" ]; then
+	cd lib
+	epydoc -v -o ../doc/API/ --name "Threaded Crawler" --graph all *
+
 else
 	echo "Unknown operation '$1'."
 fi

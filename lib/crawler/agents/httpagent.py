@@ -40,7 +40,7 @@ class HttpResponse(object):
 		"""
 		@return: True if this object represents a successful http response, 
 				False otherwise.
-		@rtype : boolean
+		@rtype:boolean
 		"""
 		return (self.code == 200)
 
@@ -97,7 +97,7 @@ class HttpAgent(object):
 		"""
 		Return a reference to the singleton HttpAgent.
 
-		@return a HttpAgent object
+		@return: a HttpAgent object
 		"""
 		if not HttpAgent.__inst:
 			HttpAgent()
@@ -111,7 +111,7 @@ class HttpAgent(object):
 		@param url: the url to open
 		@type  url: string
 		@return: an HttpResponse object with the response code, message and content
-		@rtype : HttpResponse
+		@rtype: HttpResponse
 		"""
 		http_response = HttpResponse()
 		retry_count = 0

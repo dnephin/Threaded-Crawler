@@ -20,6 +20,6 @@ class GlobalConfiguration(object):
 		Retrieve configuration based on class name.
 
 		@return: the configuration map for the class with name, or None
-		@rtype : dict
+		@rtype: dict
 		"""
 		return GlobalConfiguration.config.get(name, default)

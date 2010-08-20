@@ -37,9 +37,9 @@ class FileSystemAgent(object):
 	on_duplicate (Default: SKIP)
 			- the action to take when the file to be saved already exists.
 			Possible values: 
-				FileSystemAgent.CLOBBER - write the new file, ignoring the old one
-				FileSystemAgent.BACKUP - create a backup of the old file as .<tstamp>.bak
-				FileSystemAgent.SKIP - do not save the file
+			- FileSystemAgent.CLOBBER - write the new file, ignoring the old one
+			- FileSystemAgent.BACKUP - create a backup of the old file as .<tstamp>.bak
+			- FileSystemAgent.SKIP - do not save the file
 	
 	"""
 	# TODO: do i need a lock for the configure method ?
@@ -47,11 +47,11 @@ class FileSystemAgent(object):
 	__inst = None
 
 	CLOBBER = 1	
-	" @cvar CLOBBER: Clobber existing files with the same name. "
+	" @cvar: Clobber existing files with the same name. "
 	BACKUP  = 2 
-	" @cvar BACKUP: Backup existing files with the same name. "
+	" @cvar: Backup existing files with the same name. "
 	SKIP    = 3 
-	" @cvar SKIP: Skip existing files with the same name. "
+	" @cvar: Skip existing files with the same name. "
 
 
 	def __init__(self):

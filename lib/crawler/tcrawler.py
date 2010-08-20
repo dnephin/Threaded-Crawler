@@ -109,7 +109,7 @@ def load_config_module():
 	script. 
 
 	@return: a tuple of route, crawler_config, agent_config
-	@rtype : tuple (of three dict)
+	@rtype: tuple (of three dict)
 	"""
 	import sys
 	if len(sys.argv) < 2:

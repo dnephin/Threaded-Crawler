@@ -4,8 +4,9 @@ __Minor Additions__
 	- command for saving files to disk
 	- Generate documentation using epydoc
 		- add doc gen to build script
+	- unittest + doc crawler.commands.base
 	- finish job save rule
-	- Test revursive rule
+	- Test reursive rule
 	- Test/Check urrlib2 open is thread safe
 		- possible change it to 1 agent per thread
 
