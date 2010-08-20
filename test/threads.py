@@ -7,36 +7,9 @@ from Queue import Queue
 from threading import Semaphore
 import time
 
-from crawler.commands.base import Command
 from crawler.threads import ProcessingThread, WorkUnit
+from test import SimpleCommand, ManyCommand, ExceptionCommand, CounterObject
 
-
-class SimpleCommand(Command):
-
-	def __init__(self, url=None):
-		self.url = url
-		Command.__init__(self, [])
-
-	def execute(self, work_unit):
-		work_unit.url = "NOW"
-
-class CounterObject(object):
-
-	counter = 0
-
-class ManyCommand(SimpleCommand):
-
-	def execute(self, work_unit):
-		if work_unit.url > 5:
-			return None
-		CounterObject.counter += 1
-		c = ManyCommand()
-		return [WorkUnit(c, url=work_unit.url+1), WorkUnit(c, url=work_unit.url+2)]
-
-class ExceptionCommand(SimpleCommand):
-
-	def execute(self, work_unit):
-		raise ValueError("lalala")
 
 
 class TestProcessingThread(unittest.TestCase):
@@ -78,6 +51,7 @@ class TestProcessingThread(unittest.TestCase):
 		self.q.put(w)
 		time.sleep(1.5)
 		self.assertEquals(CounterObject.counter, 12)
+		CounterObject.counter = 0
 
 	def test_run_exception(self):
 		" Test that exceptions in commands do not cause the thread to die. "

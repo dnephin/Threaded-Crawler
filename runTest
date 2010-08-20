@@ -1,6 +1,0 @@
-#!/bin/bash
-# Run the unit tests
-
-
-export PYTHONPATH=./conf:./lib:.
-python ./test/runall.py

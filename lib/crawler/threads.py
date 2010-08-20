@@ -69,15 +69,14 @@ class QueueWatcher(threading._Semaphore):
 				the count of active worker threads.
 		@rtype: boolean
 		"""
-		# FIXME: what is this doing ?
-		self.__cond.acquire()
+		self._Semaphore__cond.acquire()
 
 		if (self.queue.empty() and 
-				self._Semaphore__value == (threading.active_count - self.max_value)):
-			self.__cond.release()
+				self._Semaphore__value == self.max_value):
+			self._Semaphore__cond.release()
 			return True
 		else:
-			self.__cond.release()
+			self._Semaphore__cond.release()
 			return False
 
 
@@ -97,6 +96,9 @@ class ProcessingThread(threading.Thread):
 
 		@param work_queue: a thread safe queue of WorkUnit objects
 		@type  work_queue: Queue
+		@param work_semaphore: a semaphore that is acquired when work
+				is being performed, and released when it is completed.
+		@type  work_semaphore: Semaphore
 		"""
 		self.work_queue = work_queue
 		self.work_semaphore = work_semaphore

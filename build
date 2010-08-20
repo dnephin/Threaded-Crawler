@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+# Build and development related tasks
+#
+
+
+export PYTHONPATH=./conf:./lib:.
+
+if [ "$1" == "" ]; then
+	echo "Usage:
+	$0 <operation> [<params>]
+	
+Operations:
+	clean		removev .pyc files
+	test		run all tests
+	test_mod	test a single module, expcets the module name (with path) as a param
+"
+
+elif [ "$1" == "test" ]; then
+	python ./test/__init__.py
+
+elif [ "$1" == "test_mod" ]; then
+	python $2
+
+elif [ "$1" == "clean" ]; then
+	find -name \*.pyc -exec rm {} \;
+
+else
+	echo "Unknown operation '$1'."
+fi
