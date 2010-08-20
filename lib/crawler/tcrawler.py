@@ -7,8 +7,8 @@ from Queue import Queue, Empty
 from threading import Semaphore
 import time
 
-from threads import ProcessingThread, WorkUnit 
-from config import GlobalConfiguration
+from crawler.threads import ProcessingThread, WorkUnit 
+from crawler.config import GlobalConfiguration
 
 log = logging.getLogger("ThreadedCrawler")
 

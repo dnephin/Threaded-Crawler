@@ -10,10 +10,10 @@ import logging
 import urlparse
 import re
 from BeautifulSoup import BeautifulSoup, SoupStrainer
-from threads import WorkUnit
+from crawler.threads import WorkUnit
 
 # agents
-from agents.httpagent import HttpAgent
+from crawler.agents.httpagent import HttpAgent
 
 log = logging.getLogger("Command")
 

@@ -1,4 +1,4 @@
 #!/bin/bash
 
 export PYTHONPATH=./conf
-python ./lib/tcrawler.py $@
+python ./lib/crawler/tcrawler.py $@

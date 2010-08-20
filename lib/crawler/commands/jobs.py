@@ -4,7 +4,7 @@
 
 import logging
 
-from commands.base import HttpFetchCommand, Command
+from crawler.commands.base import HttpFetchCommand, Command
 
 
 log = logging.getLogger("Command")

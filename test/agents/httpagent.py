@@ -6,8 +6,8 @@ import unittest
 import urllib2
 import socket
 
-from agents.httpagent import HttpAgent
-from config import GlobalConfiguration
+from crawler.agents.httpagent import HttpAgent
+from crawler.config import GlobalConfiguration
 
 
 class TestHttpAgent(unittest.TestCase):

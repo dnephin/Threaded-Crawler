@@ -2,6 +2,5 @@
 # Run the unit tests
 
 
-export PYTHONPATH=./conf:./lib
-python ./test/agents/test_httpagent.py
-python ./test/test_threads.py
+export PYTHONPATH=./conf:./lib:.
+python ./test/runall.py

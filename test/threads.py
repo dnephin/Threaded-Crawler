@@ -3,11 +3,12 @@ Unit tests for threads class of the tcrawler.
 """
 
 import unittest
-from threads import ProcessingThread, WorkUnit
 from Queue import Queue
 from threading import Semaphore
-from commands.base import Command
 import time
+
+from crawler.commands.base import Command
+from crawler.threads import ProcessingThread, WorkUnit
 
 
 class SimpleCommand(Command):

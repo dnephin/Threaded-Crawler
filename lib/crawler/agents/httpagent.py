@@ -8,7 +8,7 @@ import urllib2
 from cookielib import CookieJar
 import socket
 
-from config import GlobalConfiguration
+from crawler.config import GlobalConfiguration
 
 
 log = logging.getLogger("HTTPAgent")
@@ -53,11 +53,12 @@ class HttpAgent(object):
 	from the global config util. If none is found, it uses default values.
 
 	This object accepts the following configuration values:
-	http_timeout (Default 60): seconds to wait before timeing out the connection
-	max_retry (Default 2): number of retry attempts to fetch the url if a timeout
-			occurs.
-	enable_cookies (Default: False): should this agent use a CookieJar and
-			support cookies.
+	http_timeout (Default 60) 
+		- seconds to wait before timeing out the connection
+	max_retry (Default 2) 
+		- number of retry attempts to fetch the url if a timeout occurs.
+	enable_cookies (Default: False) 
+		- should this agent use a CookieJar and support cookies.
 	"""
 
 	__inst = None

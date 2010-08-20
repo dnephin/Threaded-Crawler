@@ -1,15 +1,13 @@
 """
-Configuration for canadian craigslist sites.
-
-
+Configuration for Canadian craigslist sites.
 """
-
 from datetime import datetime, timedelta
-from commands.base import FollowA, FollowAPartial, HttpFetchCommand, RecursiveFollowA
-from commands.jobs import StoreToJobDatabase
-
 from cookielib import Cookie
 from datetime import datetime, timedelta
+
+from crawler.commands.base import FollowA, FollowAPartial, HttpFetchCommand, RecursiveFollowA
+from crawler.commands.jobs import StoreToJobDatabase
+
 
 CRAWLER_CONFIG = {
 	'number_threads': 30
