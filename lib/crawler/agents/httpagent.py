@@ -7,6 +7,7 @@ import logging
 import urllib2
 from cookielib import CookieJar
 import socket
+from threading import Lock
 
 from crawler.config import GlobalConfiguration
 
@@ -60,6 +61,7 @@ class HttpAgent(object):
 	enable_cookies (Default: False) 
 		- should this agent use a CookieJar and support cookies.
 	"""
+	# TODO: do i need a lock for the configure method ?
 
 	__inst = None
 

@@ -14,6 +14,7 @@ from crawler.threads import WorkUnit
 
 # agents
 from crawler.agents.httpagent import HttpAgent
+from crawler.agents.stats import Statistics
 
 log = logging.getLogger("Command")
 
@@ -98,9 +99,11 @@ class HttpFollowCommand(HttpFetchCommand):
 		resp = self.fetch(work_unit.url)
 
 		if not resp.success():
-			# TODO: better logging
 			log.warn("Failed url: %s" % work_unit.url)
+			Statistics.getObj().stat('http_fail_%d' % resp.code)
 			return None
+
+		Statistics.getObj().stat('http_success')
 
 		url_dict = self.parse_urls(
 				self.get_soup_content(resp.content),

@@ -2,11 +2,18 @@
 
 __Minor Additions__
 	- rule for saving files to disk
+	- Generate documentation using epydoc
+		- add doc gen to build script
 	- finish job save rule
+	- Test revursive rule
+	- Test/Check urrlib2 open is thread safe
+		- possible change it to 1 agent per thread
 
 
 __Feature 1__
-	- add run statistics (items saved, errors, etc)
-		- single stats object with locks
 	- Command thread to pause/status/resume
 
+
+__Feature 2__
+	- Could performance be improved by moving agents to one per thread
+		instead of being singletons with locks

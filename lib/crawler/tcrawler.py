@@ -9,6 +9,7 @@ import time
 
 from crawler.threads import ProcessingThread, WorkUnit, QueueWatcher 
 from crawler.config import GlobalConfiguration
+from crawler.agents.stats import Statistics
 
 log = logging.getLogger("ThreadedCrawler")
 
@@ -66,7 +67,7 @@ class CrawlerLoader(object):
 			# TODO: add pause event, once implemented to stop processing.
 			self._clear_queue()
 		self._shutdown()
-
+		self._print_stats()
 
 	def _clear_queue(self):
 		" Clear the queue of WorkUnits. "
@@ -96,6 +97,10 @@ class CrawlerLoader(object):
 		for thread in self.thread_pool:
 			thread.join()
 
+	def _print_stats(self):
+		" Print statistics to stdout. "
+		stats = Statistics.getObj().details()
+		print '\n'.join(['%20s %s' % (k, v) for (k, v) in stats.iteritems() ])
 
 
 def load_config_module():
