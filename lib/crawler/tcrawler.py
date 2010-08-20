@@ -7,7 +7,7 @@ from Queue import Queue, Empty
 from threading import Semaphore
 import time
 
-from crawler.threads import ProcessingThread, WorkUnit 
+from crawler.threads import ProcessingThread, WorkUnit, QueueWatcher 
 from crawler.config import GlobalConfiguration
 
 log = logging.getLogger("ThreadedCrawler")
@@ -15,7 +15,7 @@ log = logging.getLogger("ThreadedCrawler")
 
 class CrawlerLoader(object):
 	""" 
-	The tcrawler Loader. Responsible for reading the
+	The crawler loader. Responsible for reading the
 	configuration, storing agent configuration in the GlobalConfiguration,
 	starting thread pool and sending the first Command into the Queue.
 	"""
@@ -46,7 +46,7 @@ class CrawlerLoader(object):
 		self.work_queue = Queue()
 		# processing threads
 		self.thread_pool = []
-		self.working_semaphore = Semaphore(self.config['number_threads'])
+		self.working_semaphore = QueueWatcher(self.config['number_threads'], queue=self.work_queue)
 
 		for i in range(self.config['number_threads']):
 			self.thread_pool.append(ProcessingThread(self.work_queue, self.working_semaphore))
@@ -63,6 +63,7 @@ class CrawlerLoader(object):
 			self._wait_on_work()
 		except KeyboardInterrupt, err:
 			log.warn("Caught KeyboardInteruupt, shutting down.")
+			# TODO: add pause event, once implemented to stop processing.
 			self._clear_queue()
 		self._shutdown()
 
@@ -75,23 +76,16 @@ class CrawlerLoader(object):
 		except Empty:
 			pass
 
-	# TODO: fix so that it can be killed
 	def _wait_on_work(self):
 		"""
 		Wait for all the processing threads to complete their tasks.
 		"""
 		time.sleep(1)
-		work_done_count = 0
-		work_done_max = 4
-		while work_done_count < work_done_max:
-			# FIXME: this breaks if a thread crashes
-			# TODO: superclass semaphore to make _Semaphore__Value atomic ?
-			if (self.work_queue.empty() and 
-					self.working_semaphore._Semaphore__value == self.config['number_threads']):
-				work_done_count += 1
-				log.warn("Shutting down in %d..." % (work_done_max - work_done_count))
+		while True:
+			if self.working_semaphore.is_work_complete():
+				log.warn("Shutting down...")
+				return
 			time.sleep(1)
-		return
 
 	def _shutdown(self):
 		"""

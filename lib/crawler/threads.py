@@ -1,5 +1,5 @@
 """
- Threads for tcrawler.
+ Threads and related threading objects for the tcrawler.
 """
 
 import threading
@@ -45,6 +45,40 @@ class WorkUnit(object):
 		if self.isShutdown():
 			return "WorkUnit - Shutdown"
 		return "WorkUnit - %s, url[%s]" % (self.command, self.url)
+
+
+class QueueWatcher(threading._Semaphore):
+	"""
+	An extension of the Semaphore class that locks and allows a thread
+	to check the current value of the semaphore and the value of a Queue.
+	"""
+
+	def __init__(self, value=1, verbose=None, queue=None):
+		if not queue:
+			raise ValueError("A Queue object is required for the QueueWatcher.")
+		self.queue = queue
+		self.max_value = value
+		threading._Semaphore.__init__(self, value, verbose)
+
+	def is_work_complete(self):
+		"""
+		This method checks to see if the queue is empty and no worker threads
+		are working.  If this is the case, work should be complete.
+
+		@return: True if the queue is empty and the semaphore value equals
+				the count of active worker threads.
+		@rtype: boolean
+		"""
+		# FIXME: what is this doing ?
+		self.__cond.acquire()
+
+		if (self.queue.empty() and 
+				self._Semaphore__value == (threading.active_count - self.max_value)):
+			self.__cond.release()
+			return True
+		else:
+			self.__cond.release()
+			return False
 
 
 
