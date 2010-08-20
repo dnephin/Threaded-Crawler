@@ -1,7 +1,7 @@
 
 
 __Minor Additions__
-	- rule for saving files to disk
+	- command for saving files to disk
 	- Generate documentation using epydoc
 		- add doc gen to build script
 	- finish job save rule

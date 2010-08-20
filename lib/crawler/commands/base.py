@@ -62,8 +62,23 @@ class HttpFetchCommand(Command):
 		return None
 
 	def fetch(self, url):
+		"""
+		Fetch a url by performing a GET request using the HttpAgent.
+
+		@param url: the url to fetch
+		@type  url: string
+		@return: a response object on success, or None of failure
+		@rtype: HttpResponse
+		"""
 		http_agent = HttpAgent.getAgent()
-		return http_agent.fetch(url)
+		resp = http_agent.fetch(url)
+		if not resp.success():
+			log.warn("Failed url: %s" % url)
+			Statistics.getObj().stat('http_fail_%d' % resp.code)
+			return None
+
+		Statistics.getObj().stat('http_success')
+		return resp 
 
 
 class HttpFollowCommand(HttpFetchCommand):
@@ -97,13 +112,8 @@ class HttpFollowCommand(HttpFetchCommand):
 			return None
 
 		resp = self.fetch(work_unit.url)
-
-		if not resp.success():
-			log.warn("Failed url: %s" % work_unit.url)
-			Statistics.getObj().stat('http_fail_%d' % resp.code)
+		if not resp:
 			return None
-
-		Statistics.getObj().stat('http_success')
 
 		url_dict = self.parse_urls(
 				self.get_soup_content(resp.content),
@@ -241,3 +251,37 @@ class FollowIMG(HttpFollowCommand):
 
 	TAG_REGEX = re.compile('^(?:IMG|img|Img)$')
 	URL_PROPERTY = 'src'
+
+
+
+class StoreCommand(HttpFetchCommand):
+	"""
+	Base class for all commands that store a page.
+	"""
+
+	def execute(self, work_unit):
+		resp = self.fetch(work_unit.url)
+		if not resp:
+			return None
+
+		if self.content_passes_conditions(resp):
+			self.store(resp)
+
+		return None
+
+
+	def content_passes_conditions(self, resp):
+		"""
+		Check if the response meets the conditions that are required to save
+		this content.
+		"""
+		return True
+
+
+	def store(self, resp):
+		"""
+		Store the content.
+		"""
+		
+
+
