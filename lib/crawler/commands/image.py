@@ -87,6 +87,14 @@ class StoreImageToFS(StoreCommand):
 	def _get_value_method(value):
 		"""
 		Return a function pointer that will evaluate based on the value.
+
+		@param value: some value passed to the constructor
+		@type  value: any
+		@return: a single param function reference that returns a boolean
+		@rtype: function reference
+
+		@raise ValueError: if the type of value is not one of: None, tuple, list,
+				string, int
 		"""
 		if value is None:
 			return lambda x: True
@@ -100,4 +108,5 @@ class StoreImageToFS(StoreCommand):
 			return lambda x: x >= value
 		if type(value) == int and value < 0:
 			return lambda x: x <= value
-		raise ValueError("Unexpected type sent to StoreImageToFS with value %s." % value)
+		raise ValueError("Unexpected type '%s' sent to StoreImageToFS with value: %s." % (
+				type(value), value))
