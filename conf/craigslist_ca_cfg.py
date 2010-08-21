@@ -5,7 +5,8 @@ from datetime import datetime, timedelta
 from cookielib import Cookie
 from datetime import datetime, timedelta
 
-from crawler.commands.base import FollowA, FollowAPartial, HttpFetchCommand, RecursiveFollowA
+from crawler.commands.base import FollowA, FollowAPartial, HttpFetchCommand
+from crawler.commands.base import RecursiveFollowA
 from crawler.commands.jobs import StoreToJobDatabase
 
 from crawler.agents.httpagent import HttpAgent
@@ -28,6 +29,7 @@ AGENT_CONFIG = {
 	HttpAgent: {
 		'http_timeout': 29,
 		'enable_cookies': True,
+		'cookie_file': '/tmp/crawler_cookie',
 	}
 }
 

@@ -5,7 +5,7 @@
 import logging
 
 import urllib2
-from cookielib import CookieJar
+from cookielib import CookieJar, MozillaCookieJar
 import socket
 from threading import Lock
 import re
@@ -55,12 +55,14 @@ class HttpAgent(object):
 	from the global config util. If none is found, it uses default values.
 
 	This object accepts the following configuration values:
-	http_timeout (Default 60) 
-		- seconds to wait before timeing out the connection
-	max_retry (Default 2) 
-		- number of retry attempts to fetch the url if a timeout occurs.
-	enable_cookies (Default: False) 
-		- should this agent use a CookieJar and support cookies.
+		- http_timeout (Default 60) 
+			- seconds to wait before timeing out the connection
+		- max_retry (Default 2) 
+			- number of retry attempts to fetch the url if a timeout occurs.
+		- enable_cookies (Default: False) 
+			- should this agent use a CookieJar and support cookies.
+		- cookie_file (Default: /tmp/crawler_cookies):
+			- the filename used to persist cookies
 	"""
 	# TODO: do i need a lock for the configure method ?
 
@@ -88,7 +90,7 @@ class HttpAgent(object):
 		self.http_timeout = config.get('http_timeout', 60)
 
 		if config.get('enable_cookies', False):
-			cookie_jar = CookieJar()
+			cookie_jar = MozillaCookieJar(config.get('cookie_file', '/tmp/crawler_cookies'))
 			handlers.append(urllib2.HTTPCookieProcessor(cookie_jar))
 
 		self.max_retry = config.get('max_retry', 3)
