@@ -5,38 +5,35 @@ Configuration for hitw.
 
 from crawler.commands.base import FollowA, FollowIMG
 from crawler.commands.image import StoreImageToFS
+from crawler.agents.fsagent import FileSystemAgent
+from crawler.agents.httpagent import HttpAgent
 
 
 CRAWLER_CONFIG = {
-	'number_threads': 100
+	'number_threads': 25
 }
 
 
 AGENT_CONFIG = {
 
-	'FileStoreAgent': {
-		'base_path': 	"",
-		'on_duplicate_file': 'BACKUP',
+	FileSystemAgent: {
+		'base_path': 	"/tmp/hitw/",
+		'on_duplicate': 'BACKUP',
+	},
+
+
+	HttpAgent: {
+		'http_timeout': 40,	
 	}
+}
 
-
-	'HttpAgent' = {
-		'http_timeout': 30,	
-	
-	}
-
-
-__store = StoreImageToFS()
+__store = StoreImageToFS(width=200, height=200)
 
 ROUTE = [
-	FollowA(url = 'http://doubleviking.com/hotties', 
-			regex = '.html', chain = [
-		FollowIMG(regex = '\.jpg', chain = [
+	FollowA(url = 'http://doubleviking.com/hotties/main.php', 
+			regex = 'v/[a-zA-Z\d\-_\.]+.jpg.html', chain = [
+		FollowIMG(regex = '/hotties/d/.*\.jpg', chain = [
 			__store
 		])
-	],
-	FollowIMG(url = 'http://doubleviking.com/hotties',
-			regex = '\.jpg', chain = [
-			__store
-	])
+	]),
 ]

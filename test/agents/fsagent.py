@@ -39,7 +39,7 @@ class TestFileSystemAgent(unittest.TestCase):
 	def test_configuration(self):
 		" Test that the configuration is loaded properly. "
 		user_path = os.path.expanduser('~')
-		GlobalConfiguration.config['FileSystemAgent'] = {
+		GlobalConfiguration.config[FileSystemAgent] = {
 				'base_path': user_path, 
 				'on_duplicate': FileSystemAgent.CLOBBER
 		}

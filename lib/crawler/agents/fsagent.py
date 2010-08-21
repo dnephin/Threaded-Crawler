@@ -66,7 +66,7 @@ class FileSystemAgent(object):
 
 	def configure(self):
 		" Load the configuration for this agent. "
-		conf = GlobalConfiguration.get(self.__class__.__name__, {})
+		conf = GlobalConfiguration.get(self.__class__, {})
 		self.base_path = conf.get('base_path', '/tmp')
 		self.on_duplicate = conf.get('on_duplicate', FileSystemAgent.SKIP)
 

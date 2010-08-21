@@ -80,7 +80,7 @@ class HttpAgent(object):
 	def configure(self):
 		" Configure the HttpAgent from a HttpAgentConfig object or use defaults. "
 		handlers = []
-		config = GlobalConfiguration.get(self.__class__.__name__, {})
+		config = GlobalConfiguration.get(self.__class__, {})
 		self.http_timeout = config.get('http_timeout', 60)
 
 		if config.get('enable_cookies', False):

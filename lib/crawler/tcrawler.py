@@ -100,7 +100,7 @@ class CrawlerLoader(object):
 	def _print_stats(self):
 		" Print statistics to stdout. "
 		stats = Statistics.getObj().details()
-		print '\n'.join(['%20s %s' % (k, v) for (k, v) in stats.iteritems() ])
+		print '\n'.join(['%-35s %s' % (k, v) for (k, v) in stats.iteritems() ])
 
 
 def load_config_module():

@@ -68,14 +68,18 @@ class StoreImageToFS(StoreCommand):
 		Statistics.getObj().stat('image_did_not_meet_conditions')
 		return False
 
+	# TODO: correct filename based on content type
+	def build_filename(self, url):
+		" Construct the filename from the url. "
+		urlparts = urlparse.urlsplit(url)
+		return "".join(urlparts[1:4])
 
 	def store(self, url, content, work_unit):
 		"""
 		Store the content.
 		"""
 		agent = FileSystemAgent.getAgent()
-		urlparts = urlparse.urlsplit(url)
-		fs_return = agent.save(urlparts[1:3], content)
+		fs_return = agent.save(self.build_filename(url), content)
 		if not fs_return.result:
 			log.warn("Failed to save %s: %s" % (url, fs_return.message))
 			Statistics.getObj().stat('image_save_failed')
@@ -102,7 +106,7 @@ class StoreImageToFS(StoreCommand):
 			return lambda x: value[0] <= x <= value[1]
 		if type(value) == list:
 			return lambda x: x in value
-		if type(value) == string:
+		if type(value) == str:
 			return lambda x: x == value
 		if type(value) == int and value >= 0:
 			return lambda x: x >= value

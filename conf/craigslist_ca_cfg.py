@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from crawler.commands.base import FollowA, FollowAPartial, HttpFetchCommand, RecursiveFollowA
 from crawler.commands.jobs import StoreToJobDatabase
 
+from crawler.agents.httpagent import HttpAgent
 
 CRAWLER_CONFIG = {
 	'number_threads': 30
@@ -24,7 +25,7 @@ AGENT_CONFIG = {
 	},
 
 
-	'HttpAgent': {
+	HttpAgent: {
 		'http_timeout': 29,
 		'enable_cookies': True,
 	}

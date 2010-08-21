@@ -16,7 +16,7 @@ class TestHttpAgent(unittest.TestCase):
 		pass
 
 	def tearDown(self):
-		GlobalConfiguration.config["HttpAgent"] = {}
+		GlobalConfiguration.config[HttpAgent] = {}
 		HttpAgent.getAgent().configure()
 
 
@@ -27,7 +27,7 @@ class TestHttpAgent(unittest.TestCase):
 
 	def test_configure(self):
 		" Test that configure sets config params. "
-		GlobalConfiguration.config["HttpAgent"] = {
+		GlobalConfiguration.config[HttpAgent] = {
 				'http_timeout': 10,
 				'enable_cookies': True,
 				'max_retry': 5 }
@@ -48,7 +48,7 @@ class TestHttpAgent(unittest.TestCase):
 		b = HttpAgent.getAgent()
 		self.assertEquals(id(a), id(b))
 
-		GlobalConfiguration.config["HttpAgent"] = { 'http_timeout': 99 }
+		GlobalConfiguration.config[HttpAgent] = { 'http_timeout': 99 }
 		self.assertEquals(HttpAgent.getAgent().http_timeout, 60)
 
 
