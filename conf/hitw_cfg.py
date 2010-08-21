@@ -3,6 +3,9 @@ Configuration for hitw.
 
 """
 
+from crawler.commands.base import FollowA, FollowIMG
+from crawler.commands.image import StoreImageToFS
+
 
 CRAWLER_CONFIG = {
 	'number_threads': 100
@@ -23,16 +26,17 @@ AGENT_CONFIG = {
 	}
 
 
+__store = StoreImageToFS()
 
 ROUTE = [
 	FollowA(url = 'http://doubleviking.com/hotties', 
 			regex = '.html', chain = [
 		FollowIMG(regex = '\.jpg', chain = [
-			SaveToFilesystemConditional()
+			__store
 		])
 	],
 	FollowIMG(url = 'http://doubleviking.com/hotties',
 			regex = '\.jpg', chain = [
-		SavetoFileSystemConditional()
+			__store
 	])
 ]

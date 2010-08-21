@@ -12,8 +12,6 @@ import time
 
 log = logging.getLogger("FileSystemAgent")
 
-
-
 class FSOperationResult(object):
 	"""
 	A data transfer object that identifies the result of a file system operation.
@@ -22,8 +20,6 @@ class FSOperationResult(object):
 	def __init__(self, result=False, message=""):
 		self.result = result
 		self.message = message
-
-
 
 
 class FileSystemAgent(object):
@@ -110,8 +106,6 @@ class FileSystemAgent(object):
 				self._backup(full_name)
 			else:
 				return FSOperationResult(False, "File exists, skipping: %s" % (full_name))
-
-		
 		try:
 			fh = open(full_name, 'w')
 			fh.write(content)

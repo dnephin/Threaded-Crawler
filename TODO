@@ -2,8 +2,6 @@
 
 __Minor Additions__
 	- command for saving files to disk
-	- Generate documentation using epydoc
-		- add doc gen to build script
 	- unittest + doc crawler.commands.base
 	- finish job save rule
 	- Test reursive rule

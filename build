@@ -26,8 +26,7 @@ elif [ "$1" == "clean" ]; then
 	find -name \*.pyc -exec rm {} \;
 
 elif [ "$1" == "doc" ]; then
-	cd lib
-	epydoc -v -o ../doc/API/ --name "Threaded Crawler" --graph all *
+	epydoc -v -o ./doc/API/ --name "Threaded Crawler" --graph all lib/*
 
 else
 	echo "Unknown operation '$1'."
