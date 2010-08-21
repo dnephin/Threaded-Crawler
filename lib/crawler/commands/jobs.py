@@ -6,6 +6,8 @@ import logging
 
 from crawler.commands.base import HttpFetchCommand, Command
 
+from crawler.agents.dbagent import DatabaseAgent
+from crawler.agents.stats import Statistics
 
 log = logging.getLogger("Command")
 
@@ -24,7 +26,13 @@ class StoreToJobDatabase(HttpFetchCommand):
 	def execute(self, work_unit):
 		" Fetch the url to save, and store it. "
 		resp = self.fetch(work_unit.url)
+		if not resp:
+			return
 
-#		print "Save %s, %s" % (work_unit.url, work_unit.meta_data)
-#		if resp.success():
-#			self.save(resp.content, work_unit.meta_data)
+		if DatabaseAgent.getAgent().save(resp.url, resp.content,
+				category=work_unit.meta_data.get('category', None),
+				region=work_unit.meta_data.get('city', None)):
+			Statistics.getObj().stat('job_saved')
+		else:
+			Statistics.getObj().stat('job_saved_failed')
+			

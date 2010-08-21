@@ -1,10 +1,9 @@
 
 
 __Minor Additions__
-	- command for saving files to disk
+	- add argparse,  allow for logging.conf as param (requires 2.7)
 	- unittest + doc crawler.commands.base
 	- finish job save rule
-	- Test reursive rule
 	- Test/Check urrlib2 open is thread safe
 		- possible change it to 1 agent per thread
 

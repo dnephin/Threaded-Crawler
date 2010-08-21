@@ -44,6 +44,7 @@ if __name__ == "__main__":
 	import unittest
 	from test import threads, tcrawler
 	from test.agents import httpagent, stats, fsagent
+	from test.commands import base, image
 	
 	import logging.config
 	logging.config.fileConfig('./conf/logging.conf')
@@ -58,6 +59,8 @@ if __name__ == "__main__":
 		l(tcrawler),
 		l(stats),
 		l(fsagent),
+		l(base),
+		l(image)
 	])
 	
 	# run

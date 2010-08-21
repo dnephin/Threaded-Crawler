@@ -8,6 +8,7 @@ import urllib2
 from cookielib import CookieJar
 import socket
 from threading import Lock
+import re
 
 from crawler.config import GlobalConfiguration
 
@@ -65,6 +66,9 @@ class HttpAgent(object):
 
 	__inst = None
 
+	ENCODING_REGEX = re.compile('.*charset=(.*);')
+	" @cvar: a compiled regex for finding the content encoding in the headers. "
+
 	def __init__(self):
 		"""
 		Setup and configure the HttpAgent. This method will throw a ValueError 
@@ -120,9 +124,9 @@ class HttpAgent(object):
 			try:
 				log.debug("Fetching %s [retry: %d]." % (url, retry_count))
 				resp = self.opener.open(url, timeout=self.http_timeout)
-				http_response.content = resp.read() 
 				http_response.code = 200
 				http_response.url = resp.geturl()
+				http_response.content = self._decode_content(resp)
 				log.debug("Fetched  %s." % (resp.geturl()))
 				break
 
@@ -145,4 +149,26 @@ class HttpAgent(object):
 				log.warn("Socket timeout on %s [retry: %d]: %s" % (url, retry_count, err))
 				retry_count += 1
 
-		return http_response 
+		return http_response
+
+
+	def _decode_content(self, resp):
+		"""
+		Attempt to find the content type header, and decode the content using that 
+		type.
+
+		@param resp: the http response object
+		@type  resp: 
+		@return: the content of the response object as unicode string, or the raw data
+		@rtype: unicode or str
+		"""
+		header = resp.info().typeheader
+		if not header:
+			return resp.read()
+
+		matches = self.ENCODING_REGEX.search(header)
+		if not matches:
+			return resp.read()
+
+		return resp.read().decode(matches.group(1))
+		

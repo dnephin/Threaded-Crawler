@@ -9,6 +9,7 @@ from crawler.commands.base import FollowA, FollowAPartial, HttpFetchCommand, Rec
 from crawler.commands.jobs import StoreToJobDatabase
 
 from crawler.agents.httpagent import HttpAgent
+from crawler.agents.dbagent import DatabaseAgent
 
 CRAWLER_CONFIG = {
 	'number_threads': 30
@@ -17,11 +18,10 @@ CRAWLER_CONFIG = {
 
 AGENT_CONFIG = {
 
-	'JobDatabaseAgent': {
-		'host': 	"",
-		'dbname': 	"",
-		'user': 	"",
-		'password': "",
+	DatabaseAgent: {
+		'dbname': 	"jobs",
+		'user': 	"jobs",
+		'pass': 	"jobspass",
 	},
 
 
@@ -37,7 +37,7 @@ __job_save = FollowAPartial(regex = '/(\w+)/(\d+).html',
 					captures = ['category', 'id'],
 					stop_regex = __yesterday,
 					chain = [
-				StoreToJobDatabase(meta = ['city', 'category', 'id', 'content'])])
+				StoreToJobDatabase()])
 
 ROUTE = [
 	# Hit this url to set the english cookie
