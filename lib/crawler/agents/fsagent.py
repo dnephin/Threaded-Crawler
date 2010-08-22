@@ -3,6 +3,7 @@ A singleton thread safe agent for saving files to disk.
 """
 
 from crawler.config import GlobalConfiguration 
+from common.pattern import Singleton
 
 import os
 import stat
@@ -38,9 +39,7 @@ class FileSystemAgent(object):
 			- FileSystemAgent.SKIP - do not save the file
 	
 	"""
-	# TODO: do i need a lock for the configure method ?
-
-	__inst = None
+	__metaclass__ = Singleton
 
 	CLOBBER = 1	
 	" @cvar: Clobber existing files with the same name. "
@@ -51,17 +50,11 @@ class FileSystemAgent(object):
 
 
 	def __init__(self):
-		if FileSystemAgent.__inst:
-			raise ValueError("Can not create more then one instance, use .getAgent().")
-		FileSystemAgent.__inst = self
 		self.configure()
-
 
 	@staticmethod
 	def getAgent():
-		if not FileSystemAgent.__inst:
-			return FileSystemAgent()
-		return FileSystemAgent.__inst
+		return FileSystemAgent()
 
 
 	def configure(self):

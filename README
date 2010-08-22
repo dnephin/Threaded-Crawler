@@ -10,7 +10,7 @@ Uses BeatifulSoup to parse html pages (http://www.crummy.com/software/BeautifulS
 Uses PIL for image processing (http://www.pythonware.com/products/pil/)
 Uses epydoc for documentation
 -Not in use- Uses urllib3 for thread safe http connections, and connection pooling by domain (http://code.google.com/p/urllib3/)
-
+common.patterns
 
 python-psycopg2
 
@@ -18,3 +18,8 @@ __Development__
 
 The 'build' script in the root of the checkout can be used to clean .pyc files, run unit tests, and package this as an egg.
 Documentation is in doc/API.
+
+
+__Running__
+
+$COMMON environment variable should be set to the path for common/patterns.py lib, or the lib should be installed on the default python path.

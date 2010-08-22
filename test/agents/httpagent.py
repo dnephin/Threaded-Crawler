@@ -19,12 +19,6 @@ class TestHttpAgent(unittest.TestCase):
 		GlobalConfiguration.config[HttpAgent] = {}
 		HttpAgent.getAgent().configure()
 
-
-	def test_init(self):
-		" Test that init will not return multi instances. "
-		a = HttpAgent.getAgent()
-		self.assertRaises(ValueError, HttpAgent)
-
 	def test_configure(self):
 		" Test that configure sets config params. "
 		GlobalConfiguration.config[HttpAgent] = {

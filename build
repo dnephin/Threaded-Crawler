@@ -4,7 +4,7 @@
 #
 
 
-export PYTHONPATH=./conf:./lib:.
+export PYTHONPATH=./conf:./lib:.:$COMMON 
 
 if [ "$1" == "" ]; then
 	echo "Usage:

@@ -3,20 +3,17 @@
 """
 
 import threading
+from common.pattern import Singleton
 
 class Statistics(object):
 	"""
 	A singleton thread-safe class which increments stats that are sent to it.
 	"""
-
-	__inst = None
+	__metaclass__ = Singleton
 
 	def __init__(self):
-		if Statistics.__inst:
-			raise ValueError("Only one instance allows, call Statistics.getObj()")
 		self._lock = threading.Lock()
 		self._store = {}
-		Statistics.__inst = self
 
 	@staticmethod
 	def getObj():
@@ -25,9 +22,7 @@ class Statistics(object):
 		@return: the Statistics singleton
 		@rtype:  Statistics
 		"""
-		if not Statistics.__inst:
-			return Statistics()
-		return Statistics.__inst
+		return Statistics()
 
 
 	def stat(self, name, increment=1):

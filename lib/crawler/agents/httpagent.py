@@ -10,6 +10,7 @@ import socket
 from threading import Lock
 import re
 
+from common.pattern import Singleton
 from crawler.config import GlobalConfiguration
 
 
@@ -64,10 +65,8 @@ class HttpAgent(object):
 		- cookie_file (Default: /tmp/crawler_cookies):
 			- the filename used to persist cookies
 	"""
-	# TODO: do i need a lock for the configure method ?
-
-	__inst = None
-
+	__metaclass__ = Singleton
+	
 	ENCODING_REGEX = re.compile('.*charset=(.*);')
 	" @cvar: a compiled regex for finding the content encoding in the headers. "
 
@@ -77,9 +76,6 @@ class HttpAgent(object):
 		exception if the agent has already been instantiated.  You should be 
 		using HttpAgent.getAgent() to get a reference to this object.
 		"""
-		if HttpAgent.__inst:
-			raise ValueError("This singleton has already been created, Use getAgent()")
-		HttpAgent.__inst = self
 		self.configure()
 
 
@@ -102,12 +98,9 @@ class HttpAgent(object):
 	def getAgent():
 		"""
 		Return a reference to the singleton HttpAgent.
-
 		@return: a HttpAgent object
 		"""
-		if not HttpAgent.__inst:
-			HttpAgent()
-		return HttpAgent.__inst;
+		return HttpAgent()
 
 
 	def fetch(self, url):

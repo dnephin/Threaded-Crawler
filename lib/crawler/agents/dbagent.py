@@ -6,6 +6,7 @@ import logging
 import psycopg2
 
 from crawler.config import GlobalConfiguration
+from common.pattern import Singleton
 
 log = logging.getLogger("DatabaseAgent")
 
@@ -27,22 +28,15 @@ class DatabaseAgent(object):
 		- port (Default: None)
 			- the port the database server is running on
 	"""
-
-	__inst = None
+	__metaclass__ = Singleton
 
 	def __init__(self):
-		if DatabaseAgent.__inst:
-			raise ValueError("Can not create more then one instance of "
-					"DatabaseAgent, use getAgent()")
-		DatabaseAgent.__inst = self
 		self.configure()
 		self.do_connect()
 
 	@staticmethod
 	def getAgent():
-		if not DatabaseAgent.__inst:
-			return DatabaseAgent()
-		return DatabaseAgent.__inst
+		return DatabaseAgent()
 
 	def configure(self):
 		"""

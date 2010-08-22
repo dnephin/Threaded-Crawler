@@ -2,10 +2,11 @@
 
 __Minor Additions__
 	- add argparse,  allow for logging.conf as param (requires 2.7)
-	- unittest + doc crawler.commands.base
-	- finish job save rule
-	- Test/Check urrlib2 open is thread safe
-		- possible change it to 1 agent per thread
+	- unittest + doc crawler.commands.base + jobs + image
+	- restrict domain by using a 'restrict_domain' config sent to HttpAgent
+	- move regex into config instead of statics in the command
+	- beter doc the commands
+	
 
 
 __Feature 1__
@@ -15,3 +16,6 @@ __Feature 1__
 __Feature 2__
 	- Could performance be improved by moving agents to one per thread
 		instead of being singletons with locks
+	- store ref to thread in threading.local, so that the agents can hand 
+		out a reference based on the thread ?
+
