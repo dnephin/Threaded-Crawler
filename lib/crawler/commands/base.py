@@ -36,7 +36,7 @@ class Command(object):
 		" Execute the task given the work unit. "
 
 	def __repr__(self):
-		return "<%s>" % self.__class__.__name__
+		return "%s(chain=%r)" % (self.__class__.__name__, self.chain)
 
 
 	def get_command_chain(self):
@@ -128,7 +128,8 @@ class HttpFollowCommand(HttpFetchCommand):
 		return BeautifulSoup(content, parseOnlyThese=SoupStrainer(self.TAG_REGEX)) 
 
 	def __repr__(self):
-		return "<%s regex=%s>" % (self.__class__.__name__, self.regex.pattern)
+		return "%s(url=%r, regex=%r, captures=%r, chain=%r)" % (self.__class__.__name__, 
+				self.url, self.regex.pattern, self.captures, self.chain)
 
 	def parse_urls(self, soup_content, tag, url_property, base_url="", 
 					pattern=None, captures=None):

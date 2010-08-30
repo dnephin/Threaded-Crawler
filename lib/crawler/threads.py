@@ -44,8 +44,9 @@ class WorkUnit(object):
 
 	def __repr__(self):
 		if self.isShutdown():
-			return "WorkUnit - Shutdown"
-		return "WorkUnit - %s, url[%s]" % (self.command, self.url)
+			return "WorkUnit(shutdown=True)"
+		return "WorkUnit(command=%r, url=%r, meta_data=%r)" % (self.command, 
+				self.url, self.meta_data)
 
 
 class QueueWatcher(threading._Semaphore):
