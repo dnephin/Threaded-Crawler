@@ -7,7 +7,7 @@ import logging
 from crawler.commands.base import HttpFetchCommand, StoreCommand, Command
 
 from crawler.agents.dbagent import DatabaseAgent
-from crawler.agents.stats import Statistics
+from common.stats import Statistics
 
 log = logging.getLogger("Command")
 

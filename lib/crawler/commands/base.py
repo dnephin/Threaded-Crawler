@@ -14,7 +14,7 @@ from crawler.threads import WorkUnit
 
 # agents
 from crawler.agents.httpagent import HttpAgent
-from crawler.agents.stats import Statistics
+from common.stats import Statistics
 
 log = logging.getLogger("Command")
 

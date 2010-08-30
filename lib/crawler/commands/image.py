@@ -13,7 +13,7 @@ import urlparse
 
 from crawler.commands.base import StoreCommand
 from crawler.agents.fsagent import FileSystemAgent
-from crawler.agents.stats import Statistics
+from common.stats import Statistics
 
 log = logging.getLogger("Command")
 

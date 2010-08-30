@@ -6,7 +6,7 @@ import threading
 import logging
 import traceback
 
-from crawler.agents.stats import Statistics
+from common.stats import Statistics
 
 log = logging.getLogger("ProcessingThread")
 

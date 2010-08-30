@@ -9,7 +9,7 @@ import time
 
 from crawler.threads import ProcessingThread, WorkUnit, QueueWatcher 
 from crawler.config import GlobalConfiguration
-from crawler.agents.stats import Statistics
+from common.stats import Statistics
 
 log = logging.getLogger("ThreadedCrawler")
 

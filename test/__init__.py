@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
 	import unittest
 	from test import threads, tcrawler
-	from test.agents import httpagent, stats, fsagent
+	from test.agents import httpagent, fsagent
 	from test.commands import base, image
 	
 	import logging.config
@@ -57,7 +57,6 @@ if __name__ == "__main__":
 		l(threads), 
 		l(httpagent),
 		l(tcrawler),
-		l(stats),
 		l(fsagent),
 		l(base),
 		l(image)
