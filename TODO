@@ -6,6 +6,7 @@ __Minor Additions__
 	- restrict domain by using a 'restrict_domain' config sent to HttpAgent
 	- move regex into config instead of statics in the command
 	- beter doc the commands
+	- Add in DB lib from dparser
 	
 
 

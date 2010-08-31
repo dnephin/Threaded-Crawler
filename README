@@ -12,7 +12,7 @@ Uses epydoc for documentation
 -Not in use- Uses urllib3 for thread safe http connections, and connection pooling by domain (http://code.google.com/p/urllib3/)
 common.patterns
 
-python-psycopg2
+python-psycopg2 2.0.8
 
 __Development__
 
