@@ -2,11 +2,10 @@
 
 __Minor Additions__
 	- add argparse,  allow for logging.conf as param (requires 2.7)
-	- unittest + doc crawler.commands.base + jobs + image
+	- unittest crawler.commands.base + jobs + image
 	- restrict domain by using a 'restrict_domain' config sent to HttpAgent
-	- move regex into config instead of statics in the command
-	- beter doc the commands
-	- Add in DB lib from dparser
+	- Deal with postings that roll over the pagination (so they appear on both page 1 and 2)
+	- command contructor should check if regex is already compiled, and use it
 	
 
 

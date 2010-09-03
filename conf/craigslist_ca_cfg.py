@@ -20,9 +20,9 @@ CRAWLER_CONFIG = {
 AGENT_CONFIG = {
 
 	DatabaseAgent: {
-		'dbname': 	"jobs",
-		'user': 	"jobs",
-		'pass': 	"jobspass",
+		'database': 	"jobs",
+		'user': 		"jobs",
+		'password': 	"jobspass",
 	},
 
 
