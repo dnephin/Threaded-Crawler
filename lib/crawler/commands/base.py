@@ -179,7 +179,7 @@ class HttpFollowCommand(HttpFetchCommand):
 
 		for tag_item in tags:
 			if self.text_regex and not self.text_regex.search(tag_item.text):
-				self.debug("Skipping tag '%s' because text_regex did not match." % (
+				log.debug("Skipping tag '%s' because text_regex did not match." % (
 						tag_item))
 				continue
 			meta = {}
