@@ -79,7 +79,7 @@ class HttpFetchCommand(Command):
 		if not resp.success():
 			log.warn("Failed url: %s" % url)
 			Statistics.getObj().stat('http_fail_%d' % resp.code)
-			return None
+			return
 
 		Statistics.getObj().stat('http_success')
 		return resp 
@@ -119,7 +119,8 @@ class HttpFollowCommand(HttpFetchCommand):
 				or None
 		@rtype:  list
 		"""
-		if self.url:
+		# must default to url in work unit for recursive follow
+		if not work_unit.url:
 			work_unit.url = self.url
 		
 		if not work_unit.url:
@@ -185,6 +186,8 @@ class HttpFollowCommand(HttpFetchCommand):
 			meta = {}
 			matches = pattern.search(tag_item[url_property])
 			if not matches:
+				log.debug("Skipping url_property '%s' because url did not match"
+						"regex." % (tag_item[url_property]))
 				continue
 
 			for i in range(len(matches.groups())):

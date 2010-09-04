@@ -67,7 +67,7 @@ class HttpAgent(object):
 	"""
 	__metaclass__ = Singleton
 	
-	ENCODING_REGEX = re.compile('.*charset=(.*);')
+	ENCODING_REGEX = re.compile('.*charset=(.*);?', re.IGNORECASE)
 	" @cvar: a compiled regex for finding the content encoding in the headers. "
 
 	def __init__(self):
