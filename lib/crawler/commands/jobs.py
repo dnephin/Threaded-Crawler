@@ -23,8 +23,10 @@ class StoreToJobDatabase(StoreCommand):
 
 	def store(self, url, content, work_unit):
 		if DatabaseAgent.getAgent().save(url, content,
-				category=work_unit.meta_data.get('category', None),
-				region=work_unit.meta_data.get('city', None)):
+				category=work_unit.meta_data.get('category', 
+						self.meta.get('category', None)),
+				region=work_unit.meta_data.get('region', 
+						self.meta.get('region', None))):
 			Statistics.getObj().stat('job_saved')
 		else:
 			Statistics.getObj().stat('job_saved_failed')

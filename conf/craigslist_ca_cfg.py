@@ -47,7 +47,7 @@ ROUTE = [
 	FollowA(url = 'http://geo.craigslist.org/iso/ca', 
 #			regex = '^http://(\w+)(?:\.en)?\.craigslist\.(?:ca|org|com)/', 
 			regex = '^http://montreal(?:\.en)?\.craigslist\.(?:ca|org|com)/', 
-			captures = ['city'], chain = [
+			captures = ['region'], chain = [
 		FollowA(regex = '/cgi-bin/jobs.cgi\?&(?:amp;)?category=jjj/', chain = [
 			FollowA(regex = '/jjj', chain = [ 
 				__job_save,

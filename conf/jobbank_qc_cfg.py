@@ -44,7 +44,7 @@ _next_page_url  = '/mbe/ut/rechroffr/listoffr\.asp\?NO%5FPAGE=\d+.*'
 
 
 __job_save = FollowA(regex = _post_url,
-					captures = ['city'],
+					captures = ['region'],
 					chain = [
 				StoreToJobDatabase()])
 
@@ -55,7 +55,7 @@ __page_list = FollowA(regex = _next_page_url, text_regex = '\d+',
 
 ROUTE = [
 	# Save jobs on page one
-	FollowA(url = _initial_url, regex = _post_url, captures = ['city'], chain = [
+	FollowA(url = _initial_url, regex = _post_url, captures = ['region'], chain = [
 		StoreToJobDatabase(),
 	])
 
