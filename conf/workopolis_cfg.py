@@ -1,5 +1,5 @@
 """
-Configuration for Kijiji.ca
+Configuration for Workopolis
 """
 from datetime import datetime, timedelta
 from cookielib import Cookie
@@ -35,16 +35,15 @@ AGENT_CONFIG = {
 	}
 }
 
-__yesterday = (datetime.today() - timedelta(days=1)).strftime('%d-%b-%y')
+__yesterday = (datetime.today() - timedelta(days=1)).strftime('%m-%d-%Y')
 
-_initial_url = 'http://montreal.kijiji.ca/f-jobs-W0QQCatIdZ45QQlangZen'
-_post_url = 'http://(.*)\.kijiji\.ca/c-jobs-[^W].*'
-_next_page_url  = '.*\.kijiji\.ca/f-jobs-W0QQCatIdZ45QQSortZ2QQPageZ\d+'
-
+_initial_url = 'http://www.workopolis.com/EN/job-search/montreal-jobs?l=montreal&ds=%s&lg=en' % __yesterday
+_post_url = '/EN/job/(\d+)'
+_next_page_url  = '/EN/job-search/montreal-jobs\?l=montreal&ds=%s&lg=en&pn=\d+' % __yesterday
 
 
 __job_save = FollowA(regex = _post_url,
-					captures = ['city'],
+					captures = ['id'],
 					chain = [
 				StoreToJobDatabase()])
 
@@ -55,13 +54,13 @@ __page_list = FollowA(regex = _next_page_url, text_regex = '\d+',
 
 ROUTE = [
 	# Save jobs on page one
-	FollowA(url = _initial_url, regex = _post_url, captures = ['city'], chain = [
+	FollowA(url = _initial_url, regex = _post_url, captures = ['id'], chain = [
 		StoreToJobDatabase(),
 	]),
 
 	# follow all other pages from one
 	RecursiveFollowA(url = _initial_url, regex = _next_page_url, text_regex = 'Next', 
-			stop_regex = __yesterday, chain = [
+			chain = [
 		__job_save,
 	]),
 ]

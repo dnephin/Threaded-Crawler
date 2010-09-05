@@ -28,4 +28,8 @@ class StoreToJobDatabase(StoreCommand):
 			Statistics.getObj().stat('job_saved')
 		else:
 			Statistics.getObj().stat('job_saved_failed')
+
+	def __repr__(self):
+		return "%s(chain=%r, meta=%r)" % (self.__class__.__name__, 
+				self.chain, self.meta)
 			

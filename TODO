@@ -6,6 +6,7 @@ __Minor Additions__
 	- restrict domain by using a 'restrict_domain' config sent to HttpAgent
 	- Deal with postings that roll over the pagination (so they appear on both page 1 and 2)
 	- command contructor should check if regex is already compiled, and use it
+	- add a static setting to SaveToJobDatabase that allows saving of any of the values with a static value (such as city, category)
 	
 
 

@@ -18,8 +18,6 @@ from common.stats import Statistics
 
 log = logging.getLogger("Command")
 
-
-
 class Command(object):
 	"""
 	The base class for all commands. All sub-classes must override execute().
@@ -57,9 +55,9 @@ class Command(object):
 class HttpFetchCommand(Command):
 	" Base class for all commands that fetch something using the HttpAgent. "
 
-	def __init__(self, url=None):
+	def __init__(self, url=None, chain=None):
 		self.url = url
-		Command.__init__(self, chain=None)
+		Command.__init__(self, chain=chain)
 
 	def execute(self, work_unit):
 		self.fetch(self.url)
@@ -84,6 +82,10 @@ class HttpFetchCommand(Command):
 		Statistics.getObj().stat('http_success')
 		return resp 
 
+	def __repr__(self):
+		return "%s(chain=%r, url=%r)" % (self.__class__.__name__, 
+				self.chain, self.url)
+
 
 class HttpFollowCommand(HttpFetchCommand):
 	" Base class for all commands that parse an html page and follow a tag. "
@@ -101,13 +103,25 @@ class HttpFollowCommand(HttpFetchCommand):
 		@type  captures: list of strings
 		"""
 		self.url = url
-		self.regex = re.compile(regex)
+		self.regex = self.compile_pattern(regex)
 		self.captures = captures
-		self.text_regex = None
-		if text_regex:
-			self.text_regex = re.compile(text_regex)
+		self.text_regex = self.compile_pattern(text_regex)
 		Command.__init__(self, chain)
 
+	def compile_pattern(xself, value):
+		"""
+		Return value as a compiled regex if it is a string, or unchanged
+		if it is anything else.
+
+		@param value: any value
+		@type  value: string, regex, None
+		@return: a compiled regex or value
+		@rtype: any
+		"""
+		if type(value) == str:
+			return re.compile(value)
+		return value
+		
 
 	def execute(self, work_unit):
 		"""
@@ -180,8 +194,8 @@ class HttpFollowCommand(HttpFetchCommand):
 
 		for tag_item in tags:
 			if self.text_regex and not self.text_regex.search(tag_item.text):
-				log.debug("Skipping tag '%s' because text_regex did not match." % (
-						tag_item))
+				log.debug("Skipping tag '%s' because text_regex %s did not match %s." % (
+						tag_item, self.text_regex.pattern, tag_item.text))
 				continue
 			meta = {}
 			matches = pattern.search(tag_item[url_property])
@@ -255,14 +269,18 @@ class FollowAPartial(FollowA):
 
 	def __init__(self, url=None, regex=None, captures=None, chain=None, 
 			stop_regex=None, text_regex=None):
-		self.stop_regex = re.compile(stop_regex)
+		self.stop_regex = self.compile_pattern(stop_regex)
 		FollowA.__init__(self, url=url, regex=regex, captures=captures, 
 				chain=chain, text_regex=text_regex)
 
 	def get_soup_content(self, content):
+		if not self.stop_regex:
+			return super(FollowAPartial, self).get_soup_content(content)
+
 		matches = self.stop_regex.search(content)
 		if not matches:
-			log.warn("Stop regex (%s) was not found in the document." % (self.regex.pattern))
+			log.warn("Stop regex (%s) was not found in the document." % (
+					self.regex.pattern))
 		else:
 			content = content[:matches.start()]
 			
