@@ -253,9 +253,11 @@ class FollowAPartial(FollowA):
 	once the stop_regex is reached.
 	"""
 
-	def __init__(self, url=None, regex=None, captures=None, chain=None, stop_regex=None):
+	def __init__(self, url=None, regex=None, captures=None, chain=None, 
+			stop_regex=None, text_regex=None):
 		self.stop_regex = re.compile(stop_regex)
-		FollowA.__init__(self, url=url, regex=regex, captures=captures, chain=chain)
+		FollowA.__init__(self, url=url, regex=regex, captures=captures, 
+				chain=chain, text_regex=text_regex)
 
 	def get_soup_content(self, content):
 		matches = self.stop_regex.search(content)
