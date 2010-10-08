@@ -2,8 +2,6 @@
 Configuration for Workopolis
 """
 from datetime import datetime, timedelta
-from cookielib import Cookie
-from datetime import datetime, timedelta
 
 from crawler.commands.base import FollowA, FollowAPartial, HttpFetchCommand
 from crawler.commands.base import RecursiveFollowA

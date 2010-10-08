@@ -2,8 +2,6 @@
 Configuration for Kijiji.ca
 """
 from datetime import datetime, timedelta
-from cookielib import Cookie
-from datetime import datetime, timedelta
 
 from crawler.commands.base import FollowA, FollowAPartial, HttpFetchCommand
 from crawler.commands.base import RecursiveFollowA
@@ -39,7 +37,7 @@ __yesterday = (datetime.today() - timedelta(days=1)).strftime('%d-%b-%y')
 
 _initial_url = 'http://montreal.kijiji.ca/f-jobs-W0QQCatIdZ45QQlangZen'
 _post_url = 'http://(.*)\.kijiji\.ca/c-jobs-[^W].*'
-_next_page_url  = '.*\.kijiji\.ca/f-jobs-W0QQCatIdZ45QQSortZ2QQPageZ\d+'
+_next_page_url  = '.*\.kijiji\.ca/f-jobs-W0QQCatIdZ45QQ(?:SortZ2QQ)?PageZ\d+'
 
 
 
@@ -55,12 +53,12 @@ __page_list = FollowA(regex = _next_page_url, text_regex = '\d+',
 
 ROUTE = [
 	# Save jobs on page one
-	FollowA(url = _initial_url, regex = _post_url, captures = ['region'], chain = [
-		StoreToJobDatabase(),
-	]),
+#	FollowA(url = _initial_url, regex = _post_url, captures = ['region'], chain = [
+#		StoreToJobDatabase(),
+#	]),
 
 	# follow all other pages from one
-	RecursiveFollowA(url = _initial_url, regex = _next_page_url, text_regex = 'Next', 
+	RecursiveFollowA(url = _initial_url, regex = _next_page_url, text_regex = 'Next.*', 
 			stop_regex = __yesterday, chain = [
 		__job_save,
 	]),

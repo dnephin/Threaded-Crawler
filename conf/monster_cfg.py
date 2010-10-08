@@ -2,8 +2,6 @@
 Configuration for monster.ca
 """
 from datetime import datetime, timedelta
-from cookielib import Cookie
-from datetime import datetime, timedelta
 
 from crawler.commands.base import FollowA, FollowAPartial, HttpFetchCommand
 from crawler.commands.base import RecursiveFollowA
@@ -37,7 +35,6 @@ AGENT_CONFIG = {
 	}
 }
 
-__yesterday = (datetime.today() - timedelta(days=1)).strftime('%m-%d-%Y')
 
 _initial_url = 'http://jobsearch.monster.ca/Search.aspx?where=Montreal%2c+Montr%c3%a9al%2c+Quebec&qlt=1355000&qln=1064166&lid=243&tm=1&cy=ca&re=508&k=JobSearchi&pp=100' 
 _post_regex = re.compile('http://jobview.monster.ca/.*?Montreal-QC.*', re.IGNORECASE)
