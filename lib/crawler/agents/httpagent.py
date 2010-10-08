@@ -64,6 +64,8 @@ class HttpAgent(object):
 			- should this agent use a CookieJar and support cookies.
 		- cookie_file (Default: /tmp/crawler_cookies):
 			- the filename used to persist cookies
+		- user_agent (Default: Mozilla/5.0):
+			- the string to use as the user agent header in Http Requests
 	"""
 	__metaclass__ = Singleton
 	
@@ -92,6 +94,8 @@ class HttpAgent(object):
 		self.max_retry = config.get('max_retry', 3)
 
 		self.opener = urllib2.build_opener(*tuple(handlers))
+		self.opener.addheaders = [('User-agent', 
+				config.get('user_agent', 'Mozilla/5.0'))]
 
 
 	@staticmethod
