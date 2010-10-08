@@ -71,6 +71,10 @@ class Monster:
 	initial_url = 'http://jobsearch.monster.ca/Search.aspx?where=Montreal%2c+Montr%c3%a9al%2c+Quebec&qlt=1355000&qln=1064166&lid=243&tm=1&cy=ca&re=508&k=JobSearchi&pp=100' 
 	post_regex = re.compile('http://jobview.monster.ca/.*?Montreal-QC.*', re.IGNORECASE)
 
+class WorkingCa:
+	initial_url = 'http://jobs.working.com/careers/jobsearch/results?searchType=advanced&city=Montreal&country=Canada&state=Quebec&location=Montreal,+Quebec&postDate=-1+day&sortBy=postdate&pageSize=1000&view=Brief'
+	post_regex = '/careers/jobsearch/detail\?jobId=\d+.*'
+
 
 ROUTE = [
 #	###############		Craigslist			##############
@@ -125,6 +129,9 @@ ROUTE = [
 #	FollowA(url = Monster.initial_url, regex = Monster.post_regex, chain = [
 #		StoreToJobDatabase(meta={'region': 'montreal'}),
 #	]),
-
 	# TODO: following page , its done via JS
+
+	###############		Working				 ##############
+	FollowA(url = WorkingCa.initial_url, regex = WorkingCa.post_regex, chain = [
+		StoreToJobDatabase(meta={'region': 'montreal'})]),
 ]
