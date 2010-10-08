@@ -46,7 +46,7 @@ class DatabaseAgent(object):
 		Configure the DatabseAgent from GlobalConfiguration.
 		"""
 		conf = GlobalConfiguration.get(self.__class__, {})
-		ConnectionUtil.configure(conf)
+		ConnectionUtil.configure('raw', conf)
 		self.dao = DocumentDAO()
 
 

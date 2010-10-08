@@ -17,7 +17,7 @@ log = logging.getLogger("Command")
 class StoreToJobDatabase(StoreCommand):
 	" Use the database agent to save a job posting to the database. "
 
-	def __init__(self, chain=None, meta=[]):
+	def __init__(self, chain=None, meta={}):
 		self.meta = meta
 		Command.__init__(self, chain)
 
