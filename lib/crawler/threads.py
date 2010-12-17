@@ -130,7 +130,7 @@ class ProcessingThread(threading.Thread):
 				self.stop_working()
 				return
 			log.info("Processing: %s" % (work_unit))
-			
+
 			try:
 				new_work_units = work_unit.command.execute(work_unit)
 			except Exception, err:

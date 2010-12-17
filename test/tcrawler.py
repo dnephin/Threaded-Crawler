@@ -3,11 +3,11 @@ Unit tests for the tcrawler loader.
 """
 
 import unittest
-from crawler.tcrawler import CrawlerLoader
+from crawler.tcrawler import Crawler
 
 from test import SimpleCommand
 
-class TestCrawlerLoader(unittest.TestCase):
+class TestCrawler(unittest.TestCase):
 
 
 	def setUp(self):
@@ -19,7 +19,7 @@ class TestCrawlerLoader(unittest.TestCase):
 
 	def test_blank_config_init(self):
 		" Test that init method with blank config. "
-		c = CrawlerLoader([], {}, {})
+		c = Crawler([], {}, {})
 		self.assertEquals(c.route, [])
 		c._shutdown()
 
@@ -27,14 +27,14 @@ class TestCrawlerLoader(unittest.TestCase):
 	def test_init(self):
 		" Test that init loads the configuration. "
 		a = SimpleCommand()
-		c = CrawlerLoader([a, a, a], {'number_threads': 0}, {})
+		c = Crawler([a, a, a], {'number_threads': 0}, {})
 		self.assertEquals(c.route, [a,a,a])
 		self.assertEquals(c.config['number_threads'], 0)
 		c._shutdown()
 
 	def test_start(self):
 		" Test the loader start method. "
-		c = CrawlerLoader([SimpleCommand()], {'number_threads': 2}, {})
+		c = Crawler([SimpleCommand()], {'number_threads': 2}, {})
 		c.start()
 		self.assertTrue(c.work_queue.empty())
 

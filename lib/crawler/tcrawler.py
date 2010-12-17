@@ -9,12 +9,13 @@ import time
 
 from crawler.threads import ProcessingThread, WorkUnit, QueueWatcher 
 from crawler.config import GlobalConfiguration
+from crawler.group import RoutingGroup
 from common.stats import Statistics
 
 log = logging.getLogger("ThreadedCrawler")
 
 
-class CrawlerLoader(object):
+class Crawler(object):
 	""" 
 	The crawler loader. Responsible for reading the
 	configuration, storing agent configuration in the GlobalConfiguration,
@@ -47,10 +48,13 @@ class CrawlerLoader(object):
 		self.work_queue = Queue()
 		# processing threads
 		self.thread_pool = []
-		self.working_semaphore = QueueWatcher(self.config['number_threads'], queue=self.work_queue)
+		self.working_semaphore = QueueWatcher(self.config['number_threads'], 
+				queue=self.work_queue)
 
 		for i in range(self.config['number_threads']):
-			self.thread_pool.append(ProcessingThread(self.work_queue, self.working_semaphore))
+			self.thread_pool.append(
+					ProcessingThread(self.work_queue, 
+					self.working_semaphore))
 		log.info("Started %d threads." % self.config['number_threads'])
 
 
@@ -127,12 +131,18 @@ def load_config_module():
 		sys.stderr('Config module requires an "ROUTE" dictionary')
 		sys.exit(-1)
 
-	return (config_module.ROUTE, config_module.CRAWLER_CONFIG, 
-			config_module.AGENT_CONFIG)
+	route = config_module.ROUTE or []
+
+	if hasattr(config_module, 'ROUTING_DIR'):
+		for group in RoutingGroup.load_from_dir(config_module.ROUTING_DIR):
+			for command in group.route:
+				route.append(command)
+
+	return (route, config_module.CRAWLER_CONFIG, config_module.AGENT_CONFIG)
 
 
 if __name__ == "__main__":
 	import logging.config
 	logging.config.fileConfig('./conf/logging.conf')
-	crawler = CrawlerLoader(*load_config_module())
+	crawler = Crawler(*load_config_module())
 	crawler.start()

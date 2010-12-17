@@ -26,9 +26,10 @@ class Command(object):
 	to many WorkUnit objects, on many threads.  If their state change the 
 	behaviour is undefined.
 	"""
-	def __init__(self, chain):
+	def __init__(self, chain=None, group=None):
 		" configure the command. "
 		self.chain = chain
+		self.group = group
 
 	def execute(self, work_unit):
 		"""
@@ -55,9 +56,9 @@ class Command(object):
 class HttpFetchCommand(Command):
 	" Base class for all commands that fetch something using the HttpAgent. "
 
-	def __init__(self, url=None, chain=None):
-		self.url = url
-		Command.__init__(self, chain=chain)
+	def __init__(self, *args, **kwargs):
+		self.url = kwargs.pop('url', None)
+		Command.__init__(self, *args, **kwargs)
 
 	def execute(self, work_unit):
 		self.fetch(self.url)
@@ -90,8 +91,7 @@ class HttpFetchCommand(Command):
 class HttpFollowCommand(HttpFetchCommand):
 	" Base class for all commands that parse an html page and follow a tag. "
 
-	def __init__(self, url=None, regex=None, text_regex=None,
-			captures=None, chain=None):
+	def __init__(self, *args, **kwargs):
 		"""
 		@param url: the url to fetch
 		@type  url: string
@@ -102,13 +102,13 @@ class HttpFollowCommand(HttpFetchCommand):
 		@param captures: the name given to captures done by regex
 		@type  captures: list of strings
 		"""
-		self.url = url
-		self.regex = self.compile_pattern(regex)
-		self.captures = captures
-		self.text_regex = self.compile_pattern(text_regex)
-		Command.__init__(self, chain)
+		self.url = kwargs.pop('url', None)
+		self.regex = self.compile_pattern(kwargs.pop('regex', None))
+		self.captures = kwargs.pop('captures', None)
+		self.text_regex = self.compile_pattern(kwargs.pop('text_regex', None))
+		Command.__init__(self, *args, **kwargs)
 
-	def compile_pattern(xself, value):
+	def compile_pattern(self, value):
 		"""
 		Return value as a compiled regex if it is a string, or unchanged
 		if it is anything else.
@@ -267,11 +267,9 @@ class FollowAPartial(FollowA):
 	once the stop_regex is reached.
 	"""
 
-	def __init__(self, url=None, regex=None, captures=None, chain=None, 
-			stop_regex=None, text_regex=None):
-		self.stop_regex = self.compile_pattern(stop_regex)
-		FollowA.__init__(self, url=url, regex=regex, captures=captures, 
-				chain=chain, text_regex=text_regex)
+	def __init__(self, *args, **kwargs):
+		self.stop_regex = self.compile_pattern(kwargs.pop('stop_regex', None))
+		FollowA.__init__(self, *args, **kwargs)
 
 	def get_soup_content(self, content):
 		if not self.stop_regex:

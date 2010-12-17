@@ -15,7 +15,7 @@ class TestHttpFollowCommand(unittest.TestCase):
 
 	def test_init(self):
 		" Test init method "
-		c = HttpFollowCommand('http://google.com', '\d+', 'This')
+		c = HttpFollowCommand(url='http://google.com', regex='\d+', captures=['This'])
 		self.assertEquals(c.url, 'http://google.com')
 
 	def test_parse_urls(self):
