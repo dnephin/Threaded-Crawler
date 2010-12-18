@@ -3,10 +3,10 @@
 """
 
 import sys
-import os
+import os.path
 import logging
 import itertools
-from imp import load_source
+import pkgutil
 
 log = logging.getLogger('Groups')
 
@@ -46,20 +46,23 @@ class RoutingGroup(object):
 		@return: list of RoutingGroup objects
 		@rtype: list
 		"""
-		try:
-			files = os.listdir(dir)
-		except OSError, e:
-			log.warn('Failed to load modules from dir %s: %s' % dir, e)
+		if not os.path.isdir(dir):
+			log.warn('Not a valid director for loading config modules: %s' % dir)
 			return []
-
+			
 		groups = []
 
-		for py_file in itertools.ifilter(lambda f: f.endswith('.py'), files):
+		importer = pkgutil.ImpImporter(dir)
+		for mod_tuple in importer.iter_modules():
+			name = mod_tuple[0]
+			mod_loader = importer.find_module(name)
+			if not mod_loader:
+				continue
+
 			try:
-				path = "%s/%s" % (dir, py_file)
-				module = load_source(py_file, path)
+				module = mod_loader.load_module(name)
 			except ImportError, e:
-				log.warn('Failed to load config module from %s: %s' % (path, e))
+				log.warn('Failed to load config module %s: %s' % (name, e))
 				continue
 
 			if not hasattr(module, 'ROUTING_GROUP'):
