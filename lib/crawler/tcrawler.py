@@ -133,7 +133,7 @@ def load_config_module():
 
 	route = config_module.ROUTE or []
 
-	if hasattr(config_module, 'ROUTING_DIR'):
+	if hasattr(config_module, 'ROUTING_DIR') and config_module.ROUTING_DIR:
 		for group in RoutingGroup.load_from_dir(config_module.ROUTING_DIR):
 			for command in group.route:
 				route.append(command)

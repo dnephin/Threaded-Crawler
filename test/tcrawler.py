@@ -3,7 +3,7 @@ Unit tests for the tcrawler loader.
 """
 
 import unittest
-from crawler.tcrawler import Crawler
+from crawler.tcrawler import Crawler, load_config_module
 
 from test import SimpleCommand
 
@@ -38,11 +38,19 @@ class TestCrawler(unittest.TestCase):
 		c.start()
 		self.assertTrue(c.work_queue.empty())
 
+	def test_run(self):
+		import sys
+		sys.argv = ['tcrawler', 'testrun_cfg']
+		c = Crawler(*load_config_module())
+		c.start()
+		self.assertTrue(c.work_queue.empty())
+		
+
 
 
 
 if __name__ == '__main__':
 	import logging.config
-	logging.config.fileConfig('./conf/logging.conf')
+	logging.config.fileConfig('./conf/debug.conf')
 	unittest.main()
 

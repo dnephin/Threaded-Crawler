@@ -42,12 +42,12 @@ if __name__ == "__main__":
 	"""
 
 	import unittest
-	from test import threads, tcrawler
+	from test import threads, tcrawler, group
 	from test.agents import httpagent, fsagent
 	from test.commands import base, image
 	
 	import logging.config
-	logging.config.fileConfig('./conf/logging.conf')
+	logging.config.fileConfig('./conf/debug.conf')
 	
 	# alias
 	l = unittest.defaultTestLoader.loadTestsFromModule
@@ -59,7 +59,8 @@ if __name__ == "__main__":
 		l(tcrawler),
 		l(fsagent),
 		l(base),
-		l(image)
+		l(image),
+		l(group)
 	])
 	
 	# run

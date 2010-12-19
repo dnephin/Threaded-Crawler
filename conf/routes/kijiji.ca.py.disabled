@@ -1,0 +1,31 @@
+"""
+ Kijiji.ca
+"""
+
+from datetime import datetime, timedelta
+
+from crawler.group import RoutingGroup
+from crawler.commands.base import *
+from crawler.commands.jobs import *
+
+stop_time = (datetime.today() - timedelta(days=1)).strftime('%d-%b-%y')
+initial_url = 'http://montreal.kijiji.ca/f-jobs-W0QQCatIdZ45QQlangZen'
+post_url = 'http://(.*)\.kijiji\.ca/c-jobs-[^W].*'
+next_page_url  = '.*\.kijiji\.ca/f-jobs-W0QQCatIdZ45QQ(?:SortZ2QQ)?PageZ\d+'
+
+job_save = FollowA(regex = post_url, captures = ['region'], chain = [
+			StoreToJobDatabase()])
+
+route = [
+	# Save jobs on page one
+	FollowA(url = Kijiji.initial_url, regex = Kijiji.post_url, captures = ['region'], chain = [
+		StoreToJobDatabase()]),
+
+	# follow all other pages from one
+	RecursiveFollowA(url = Kijiji.initial_url, regex = Kijiji.next_page_url, text_regex = 'Next', 
+			stop_regex = Kijiji.stop_time, chain = [ 
+		Kijiji.job_save]),
+]
+
+
+ROUTING_GROUP = RoutingGroup('kijiji', route)

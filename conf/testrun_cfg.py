@@ -1,5 +1,5 @@
 """
-Configuration for jobs.working.com canada
+ Crawler test run on google.
 """
 from datetime import datetime, timedelta
 
@@ -12,8 +12,9 @@ from crawler.agents.dbagent import DatabaseAgent
 
 import re
 
+
 CRAWLER_CONFIG = {
-	'number_threads': 10
+	'number_threads': 20
 }
 
 
@@ -23,8 +24,8 @@ AGENT_CONFIG = {
 		'database': 	"test_raw",
 		'user': 		"jobs",
 		'password': 	"jobspass",
-		'max_conn':		100,
-		'min_conn':		10,
+		'max_conn':		30,
+		'min_conn':		6,
 	},
 
 
@@ -32,18 +33,18 @@ AGENT_CONFIG = {
 		'http_timeout': 29,
 		'enable_cookies': True,
 		'cookie_file': '/tmp/crawler_cookie',
+		'user_agent': 'Mozilla/5.0 perzoot.com (http://perzoot.com/aboutus)',
 	}
 }
 
-
-class WorkingCa:
-	initial_url = 'http://jobs.working.com/careers/jobsearch/results?searchType=advanced&city=Montreal&country=Canada&state=Quebec&location=Montreal,+Quebec&postDate=-1+day&sortBy=postdate&pageSize=1000&view=Brief'
-	post_regex = '/careers/jobsearch/detail\?jobId=\d+.*'
-
+ROUTING_DIR = None
 
 ROUTE = [
-	FollowA(url = WorkingCa.initial_url, regex = WorkingCa.post_regex, chain = [
-		StoreToJobDatabase(meta={'region': 'montreal'}),
-	]),
-
+	FollowA(url="http://www.google.ca/search?ie=UTF-8&q=pizza",
+		regex = "http://.*pizza.*.ca",
+		chain = [
+			StoreToJobDatabase()
+		]
+	),
 ]
+

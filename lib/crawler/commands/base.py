@@ -194,8 +194,10 @@ class HttpFollowCommand(HttpFetchCommand):
 
 		for tag_item in tags:
 			if self.text_regex and not self.text_regex.search(tag_item.text):
+				tag_item = tag_item if tag_item else ""
+				text = tag_item.text.encode('utf-8') if tag_item else ""
 				log.debug("Skipping tag '%s' because text_regex %s did not match %s." % (
-						tag_item, self.text_regex.pattern, tag_item.text))
+						tag_item, self.text_regex.pattern, text))
 				continue
 			meta = {}
 			matches = pattern.search(tag_item[url_property])

@@ -55,7 +55,11 @@ class DatabaseAgent(object):
 		Save the record.
 		"""
 		# TODO: document
-		doc = HtmlDocument(url=url, content=content, category=category, 
-				region=region)
-		self.dao.save([doc])
+		try:
+			doc = HtmlDocument(url=url, content=content, category=category, 
+					region=region)
+			self.dao.save([doc])
+		except Exception, e:
+			log.warn("Failed to save document: %s" % e)
+			return False
 		return True
