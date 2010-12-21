@@ -11,6 +11,7 @@ from crawler.threads import ProcessingThread, WorkUnit, QueueWatcher
 from crawler.config import GlobalConfiguration
 from crawler.group import RoutingGroup
 from common.stats import Statistics
+from common.agents.httpagent import HttpAgent
 
 log = logging.getLogger("ThreadedCrawler")
 
@@ -42,6 +43,8 @@ class Crawler(object):
 					'number_threads', self.DEFAULT_NUMBER_THREADS)
 
 		GlobalConfiguration.config.update(agent_config)
+		if HttpAgent in agent_config:
+			HttpAgent().configure(agent_config[HttpAgent])
 		self.route = route 
 
 		# Queue of work units

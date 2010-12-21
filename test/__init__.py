@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
 	import unittest
 	from test import threads, tcrawler, group
-	from test.agents import httpagent, fsagent
+	from test.agents import fsagent
 	from test.commands import base, image
 	
 	import logging.config
@@ -55,7 +55,6 @@ if __name__ == "__main__":
 	# load tests from modules
 	suite = unittest.TestSuite([
 		l(threads), 
-		l(httpagent),
 		l(tcrawler),
 		l(fsagent),
 		l(base),

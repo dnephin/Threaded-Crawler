@@ -16,13 +16,12 @@ post_captures = ['category', 'id']
 
 
 route = [
-	FollowA(url = Craigslist.base_url, 
-			regex = Craigslist.post_regex, captures = Craigslist.post_captures,
+	FollowA(url = base_url, regex = post_regex, captures = post_captures,
 			chain = [StoreToJobDatabase()]),
-	RecursiveFollowA(url = Craigslist.base_url, regex = 'index\d{3,4}\.html',
-			stop_regex = Craigslist.stop_time, chain = [
-		FollowAPartial(regex = Craigslist.post_regex, captures = Craigslist.post_captures,
-				stop_regex = Craigslist.stop_time, chain = [StoreToJobDatabase()])]
+	RecursiveFollowA(url = base_url, regex = 'index\d{3,4}\.html',
+			stop_regex = stop_time, chain = [
+		FollowAPartial(regex = post_regex, captures = post_captures,
+				stop_regex = stop_time, chain = [StoreToJobDatabase()])]
 	)
 ]
 

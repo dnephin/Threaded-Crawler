@@ -13,7 +13,7 @@ from BeautifulSoup import BeautifulSoup, SoupStrainer
 from crawler.threads import WorkUnit
 
 # agents
-from crawler.agents.httpagent import HttpAgent
+from common.agents.httpagent import HttpAgent
 from common.stats import Statistics
 
 log = logging.getLogger("Command")

@@ -7,7 +7,7 @@ from crawler.commands.base import FollowA, FollowAPartial, HttpFetchCommand
 from crawler.commands.base import RecursiveFollowA
 from crawler.commands.jobs import StoreToJobDatabase
 
-from crawler.agents.httpagent import HttpAgent
+from common.agents.httpagent import HttpAgent
 from crawler.agents.dbagent import DatabaseAgent
 
 import re
