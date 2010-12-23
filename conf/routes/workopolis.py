@@ -10,7 +10,8 @@ from crawler.commands.jobs import *
 
 
 yesterday = (datetime.today() - timedelta(days=1)).strftime('%m-%d-%Y')
-initial_url = 'http://www.workopolis.com/EN/job-search/montreal-quebec-jobs?l=montreal,quebec&ds=%s&lg=en' % yesterday
+today = datetime.today().strftime('%m-%d-%Y')
+initial_url = 'http://www.workopolis.com/EN/job-search/montreal-quebec-jobs?l=montreal%%2Cquebec&dr=%s|%s&lg=en' % (yesterday, today)
 post_url = '/EN/job/(\d+)'
 next_page_url  = '/EN/job-search/montreal-quebec-jobs\?l=montreal,quebec&ds=%s&lg=en&pn=\d+' % yesterday
 
