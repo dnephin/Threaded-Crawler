@@ -14,7 +14,7 @@ post_regex = re.compile('http://jobview.monster.ca/.*?Montreal-QC.*', re.IGNOREC
 route = [
 	# Save jobs on page one
 	# Restricts jobs to Montreal proper
-	FollowA(url = Monster.initial_url, regex = Monster.post_regex, chain = [
+	FollowA(url = initial_url, regex = post_regex, chain = [
 		StoreToJobDatabase(meta={'region': 'montreal'}),
 	]),
 	# TODO: following page , its done via JS

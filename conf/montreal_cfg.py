@@ -33,7 +33,7 @@ AGENT_CONFIG = {
 		'http_timeout': 29,
 		'enable_cookies': True,
 		'cookie_file': '/tmp/crawler_cookie',
-		'user_agent': 'Mozilla/5.0 perzoot.com (http://perzoot.com/aboutus)',
+		'user_agent': 'Mozilla/5.0 perzoot.com (http://perzoot.com/page/aboutus)',
 	}
 }
 

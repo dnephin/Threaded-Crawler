@@ -13,7 +13,7 @@ initial_url = 'http://jobs.working.com/careers/jobsearch/results?searchType=adva
 post_regex = '/careers/jobsearch/detail\?jobId=\d+.*'
 
 route = [
-	FollowA(url = WorkingCa.initial_url, regex = WorkingCa.post_regex, chain = [
+	FollowA(url = initial_url, regex = post_regex, chain = [
 		StoreToJobDatabase(meta={'region': 'montreal'})]),
 ]
 
