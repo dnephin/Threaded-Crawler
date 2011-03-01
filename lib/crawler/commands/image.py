@@ -65,7 +65,7 @@ class StoreImageToFS(StoreCommand):
 		if (self.width_method(size[0]) and self.height_method(size[1]) and
 				self.type_method(image.format) and self.bytes_method(len(content))):
 			return True
-		Statistics.getObj().stat('image_did_not_meet_conditions')
+		self.record('image_did_not_meet_conditions')
 		return False
 
 	# TODO: correct filename based on content type
@@ -82,9 +82,9 @@ class StoreImageToFS(StoreCommand):
 		fs_return = agent.save(self.build_filename(url), content)
 		if not fs_return.result:
 			log.warn("Failed to save %s: %s" % (url, fs_return.message))
-			Statistics.getObj().stat('image_save_failed')
+			self.record('image_save_failed')
 			return
-		Statistics.getObj().stat('image_saved')
+		self.record('image_saved')
 		return
 		
 	@staticmethod

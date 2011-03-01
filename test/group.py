@@ -12,7 +12,7 @@ class TestRoutingGroup(unittest.TestCase):
 
 	def test_load_from_dir(self):
 		groups = RoutingGroup.load_from_dir('./conf/routes')
-		self.assertEquals(2, len(groups))
+		self.assertEquals(6, len(groups))
 
 
 if __name__ == '__main__':

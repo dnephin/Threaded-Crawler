@@ -136,7 +136,7 @@ class ProcessingThread(threading.Thread):
 			except Exception, err:
 				log.warn("Unexpected Exception from %s: %s\n%s " % (work_unit.command,
 						err, traceback.format_exc()))
-				Statistics.getObj().stat('unknown_failure')
+				Statistics.getObj().incr('Thread', 'unknown_failure')
 				self.stop_working()
 				continue
 

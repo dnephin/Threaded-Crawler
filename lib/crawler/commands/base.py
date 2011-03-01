@@ -51,6 +51,13 @@ class Command(object):
 		"""
 		return self.chain
 
+	def record(self, name):
+		"""
+		Record a status message from a command.
+		"""
+		group_name = self.group.name if self.group else ''
+		Statistics.getObj().incr(group_name, name)
+
 
 
 class HttpFetchCommand(Command):
@@ -77,10 +84,10 @@ class HttpFetchCommand(Command):
 		resp = http_agent.fetch(url)
 		if not resp.success():
 			log.warn("Failed url: %s" % url)
-			Statistics.getObj().stat('http_fail_%d' % resp.code)
+			self.record('http_fail_%d' % resp.code)
 			return
 
-		Statistics.getObj().stat('http_success')
+		self.record('http_success')
 		return resp 
 
 	def __repr__(self):

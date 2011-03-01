@@ -107,7 +107,9 @@ class Crawler(object):
 	def _print_stats(self):
 		" Print statistics to stdout. "
 		stats = Statistics.getObj().details()
-		print '\n'.join(['%-35s %s' % (k, v) for (k, v) in stats.iteritems() ])
+		for (group, values) in stats.iteritems():
+			print '\n'.join(['%-35s %s' % ("%s %s" % (group, k), v) for 
+					(k, v) in values.iteritems() ])
 
 
 def load_config_module():

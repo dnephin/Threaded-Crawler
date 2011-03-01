@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from crawler.commands.base import FollowA, FollowAPartial, HttpFetchCommand
 from crawler.commands.base import RecursiveFollowA
 from crawler.commands.jobs import StoreToJobDatabase
+from crawler.group import RoutingGroup
 
 from common.agents.httpagent import HttpAgent
 from crawler.agents.dbagent import DatabaseAgent
@@ -39,12 +40,32 @@ AGENT_CONFIG = {
 
 ROUTING_DIR = None
 
-ROUTE = [
+GROUPS = [
+
+RoutingGroup('pizza', [
 	FollowA(url="http://www.google.ca/search?ie=UTF-8&q=pizza",
 		regex = "http://.*pizza.*.ca",
 		chain = [
 			StoreToJobDatabase()
 		]
 	),
+]),
+
+RoutingGroup('stars', [
+	FollowA(url="http://www.google.ca/search?ie=UTF-8&q=stars",
+		regex = "http://.*star.*.ca",
+		chain = [
+			StoreToJobDatabase()
+		]
+	),
+])
+
 ]
+
+
+
+
+
+ROUTE = GROUPS[0].route + GROUPS[1].route
+
 

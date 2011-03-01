@@ -27,9 +27,9 @@ class StoreToJobDatabase(StoreCommand):
 						self.meta.get('category', None)),
 				region=work_unit.meta_data.get('region', 
 						self.meta.get('region', None))):
-			Statistics.getObj().stat('job_saved')
+			self.record('job_saved')
 		else:
-			Statistics.getObj().stat('job_saved_failed')
+			self.record('job_saved_failed')
 
 	def __repr__(self):
 		return "%s(chain=%r, meta=%r)" % (self.__class__.__name__, 
